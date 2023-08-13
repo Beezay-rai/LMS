@@ -7,8 +7,7 @@ namespace LMS.Areas.Admin.Interface
 
         Task<List<StaffViewModel>> GetAllStaff();
         Task<StaffViewModel> GetStaffById(int id);
-        Task<bool> CreateStaff(StaffViewModel model);
-        Task<bool> EditStaff(StaffViewModel model);
+        Task<bool> InsertUpdateStaff(StaffViewModel model);
         Task<bool> DeleteStaff(int id);
     }
 }

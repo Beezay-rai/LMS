@@ -7,8 +7,7 @@ namespace LMS.Areas.Admin.Interface
 
         Task<List<AuthorViewModel>> GetAllAuthor();
         Task<AuthorViewModel> GetAuthorById(int id);
-        Task<bool> CreateAuthor(AuthorViewModel model);
-        Task<bool> EditAuthor(AuthorViewModel model);
+        Task<bool> InsertUpdateAuthor(AuthorViewModel model);
         Task<bool> DeleteAuthor(int id);
     }
 }

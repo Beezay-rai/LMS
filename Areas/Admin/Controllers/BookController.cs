@@ -1,42 +1,55 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
+using LMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]")]
+    [Route("api/Admin/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Bookize]
+    [AllowAnonymous]
     public class BookController : ControllerBase
     {
-        private readonly IBook _book;
-        public BookController(IBook book)
+        private readonly IBook _Book;
+        public BookController(IBook Book)
         {
-            _book = book;
+            _Book = Book;
         }
-        [HttpGet("GetAllBook")]
+        [HttpGet]
         public async Task<IActionResult> GetAllBook()
         {
-            return Ok(await _book.GetAllBook());
+            var data = await _Book.GetAllBook();
+            return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "BookList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBookById(int id)
+        {
+            var data = await _Book.GetBookById(id);
+            return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Book fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
         [HttpPost]
-        public async Task<bool> CreateBook(BookViewModel model)
+        public async Task<IActionResult> CreateBook(BookViewModel model)
         {
-            return await _book.CreateBook(model);
+            var data = await _Book.InsertUpdateBook(model);
+            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Book" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditBook(int id)
+        public async Task<IActionResult> EditBook(BookViewModel model)
         {
-            return Ok(await _book.GetBookById(id));
+            var data = await _Book.InsertUpdateBook(model);
+            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Book" : "Not Updated Try Again", Data = data });
         }
 
         [HttpDelete]
-        public async Task<bool> DeleteBook(int id)
+        public async Task<IActionResult> DeleteBook(int id)
         {
-            return await _book.DeleteBook(id);
+            var data = await _Book.DeleteBook(id);
+            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Book" : "Not Deleted Try Again", Data = data });
         }
 
     }

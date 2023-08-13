@@ -6,8 +6,7 @@ namespace LMS.Areas.Admin.Interface
     {
         Task<List<StudentViewModel>> GetAllStudent();
         Task<StudentViewModel> GetStudentById(int id);
-        Task<bool> CreateStudent(StudentViewModel model);
-        Task<bool> EditStudent(StudentViewModel model);
+        Task<bool> InsertUpdateStudent(StudentViewModel model);
         Task<bool> DeleteStudent(int id);
     }
 }
