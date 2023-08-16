@@ -75,6 +75,7 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<IAccount, AccountRepository>();
 builder.Services.AddTransient<IAuthor, AuthorRepository>();
 builder.Services.AddTransient<IBook, BookRepository>();
+builder.Services.AddTransient<IStudent, StudentRepository>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Initialize the app");

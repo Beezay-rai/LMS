@@ -9,11 +9,18 @@ namespace LMS.Data
         [Required]
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [Required, DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
         [EmailAddress]
         public string EmailAddress { get; set; }
         public string Contact { get; set; }
         public bool? Deleted { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? DeletedBy { get; set; }
+        public DateTime? DeletedDate { get; set; }
 
     }
 }

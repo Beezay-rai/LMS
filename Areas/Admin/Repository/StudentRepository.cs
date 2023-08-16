@@ -61,6 +61,8 @@ namespace LMS.Areas.Admin.Repository
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
                         GenderId = model.GenderId,
+                        CreatedBy = "Bijay",
+                        CreatedDate=DateTime.UtcNow ,
                         Deleted = false
                     };
                     await _context.Student.AddAsync(student);

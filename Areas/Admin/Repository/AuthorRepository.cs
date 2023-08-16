@@ -55,6 +55,8 @@ namespace LMS.Areas.Admin.Repository
                     {
                         Name = model.Name,
                         BirthDate = model.BirthDate,
+                        CreatedBy="Bijay",
+                        CreatedDate=DateTime.UtcNow,
                         Deleted = false
                     };
                     await _context.Author.AddAsync(author);

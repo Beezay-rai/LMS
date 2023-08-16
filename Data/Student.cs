@@ -13,9 +13,15 @@ namespace LMS.Data
         public int GenderId { get; set; }
         public bool? Deleted { get; set; }
 
-        [Required]
+        [Required,DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
         [ForeignKey(nameof(GenderId))]
         public Gender Gender { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? DeletedBy { get; set; }
+        public DateTime? DeletedDate { get; set; }
     }
 }

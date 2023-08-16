@@ -14,13 +14,15 @@ namespace LMS.Areas.Admin.Repository
             _context = context;
         }
 
-        public async Task<List<BookViewModel>> GetAllBook()
+        public async Task<List<BookGETViewModel>> GetAllBook()
         {
-            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookViewModel()
+            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookGETViewModel()
             {
+                Id=x.Id,
                 Name = x.Name,
                 AuthorId = x.AuthorId,
-                CategoryId = x.CategoryId
+                CategoryId = x.CategoryId,
+                CategoryName=x.Category.Name,
             }).ToListAsync();
         }
         public async Task<BookViewModel> GetBookById(int id)
