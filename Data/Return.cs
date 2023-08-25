@@ -13,6 +13,7 @@ namespace LMS.Data
         public DateTime ReturnDate { get; set; }
         public bool? Deleted { get; set; }
 
+
         public string Remarks { get; set; }
         [ForeignKey(nameof(BorrowerId))]
         public Borrower Borrower { get;set; }

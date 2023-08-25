@@ -11,7 +11,6 @@ namespace LMS.Data
         public int CategoryId { get; set; }
         public bool? Deleted { get; set; }
 
-        [Required]
         public string Name { get; set; }
         [ForeignKey(nameof(AuthorId))]
         public Author Author { get; set; }

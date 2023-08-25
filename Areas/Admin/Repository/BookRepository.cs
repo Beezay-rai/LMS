@@ -2,16 +2,21 @@
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
     public class BookRepository : IBook
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly string _userId;
 
-        public BookRepository(ApplicationDbContext context)
+        public BookRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = contextAccessor;
+            _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         public async Task<List<BookGETViewModel>> GetAllBook()
@@ -47,7 +52,9 @@ namespace LMS.Areas.Admin.Repository
                         book.Name = model.Name;
                         book.AuthorId = model.AuthorId;
                         book.CategoryId = model.CategoryId;
-                        book.Deleted= false;    
+                        book.Deleted= false;
+                        book.UpdatedBy = _userId;
+                        book.UpdatedDate= DateTime.UtcNow;
                         _context.Entry(book).State = EntityState.Modified;
                         return true;
                     }
@@ -60,7 +67,9 @@ namespace LMS.Areas.Admin.Repository
                         Name = model.Name,
                         AuthorId = model.AuthorId,
                         CategoryId = model.CategoryId,
-                        Deleted = false
+                        Deleted = false,
+                        CreatedBy=_userId,
+                        CreatedDate= DateTime.UtcNow
                     };
                     await _context.Book.AddAsync(book);
                 }
@@ -80,6 +89,8 @@ namespace LMS.Areas.Admin.Repository
                 if (Book != null)
                 {
                     Book.Deleted = true;
+                    Book.DeletedBy=_userId;
+                    Book.DeletedDate= DateTime.UtcNow;
                     _context.Entry(Book).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return true;

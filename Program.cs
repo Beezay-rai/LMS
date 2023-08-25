@@ -76,6 +76,7 @@ builder.Services.AddTransient<IAccount, AccountRepository>();
 builder.Services.AddTransient<IAuthor, AuthorRepository>();
 builder.Services.AddTransient<IBook, BookRepository>();
 builder.Services.AddTransient<IStudent, StudentRepository>();
+builder.Services.AddTransient<IFaculty, FacultyRepository>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Initialize the app");

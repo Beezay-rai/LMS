@@ -2,16 +2,21 @@
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
     public class StudentRepository : IStudent
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHttpContextAccessor _contextAccessor;
+        private readonly string _userId;
 
-        public StudentRepository(ApplicationDbContext context)
+        public StudentRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
         {
             _context = context;
+            _contextAccessor = contextAccessor;
+            _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
         public async Task<List<StudentViewModel>> GetAllStudent()
         {
@@ -48,6 +53,9 @@ namespace LMS.Areas.Admin.Repository
                         student.LastName = model.LastName;
                         student.BirthDate = model.BirthDate;
                         student.GenderId = model.GenderId;
+                        student.UpdatedDate = DateTime.UtcNow;
+                        student.UpdatedBy = _userId;
+
                         _context.Entry(student).State = EntityState.Modified;
                         return true;
                     }
@@ -61,8 +69,8 @@ namespace LMS.Areas.Admin.Repository
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
                         GenderId = model.GenderId,
-                        CreatedBy = "Bijay",
-                        CreatedDate=DateTime.UtcNow ,
+                        CreatedBy = _userId,
+                        CreatedDate = DateTime.UtcNow,
                         Deleted = false
                     };
                     await _context.Student.AddAsync(student);
@@ -81,6 +89,8 @@ namespace LMS.Areas.Admin.Repository
             if (data != null)
             {
                 data.Deleted = true;
+                data.DeletedDate = DateTime.UtcNow;
+                data.DeletedBy = _userId;
                 _context.Entry(data).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 return true;

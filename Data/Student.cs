@@ -7,13 +7,13 @@ namespace LMS.Data
     {
         [Key]
         public int Id { get; set; }
-        [Required]
         public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
         public int GenderId { get; set; }
+        public int FacultyId { get; set; }
         public bool? Deleted { get; set; }
 
-        [Required,DataType(DataType.Date)]
+        [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
         [ForeignKey(nameof(GenderId))]
         public Gender Gender { get; set; }
