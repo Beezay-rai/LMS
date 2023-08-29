@@ -55,7 +55,7 @@ namespace LMS.Controllers
                     var authClaims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Role, role),
-                        new Claim(ClaimTypes.Name,userCheck.FirstName + " " + userCheck.LastName),
+                        new Claim(ClaimTypes.Name,userCheck.FirstName+ userCheck.LastName),
                         new Claim(ClaimTypes.NameIdentifier,userCheck.Id),
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                     };
