@@ -2,7 +2,6 @@
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Net;
 using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
@@ -31,8 +30,6 @@ namespace LMS.Areas.Admin.Repository
                 ReturnStatus = x.ReturnStatus,
                 StudentId = x.StudentId,
                 StudentFullName = x.Student.FirstName + " " + x.Student.LastName,
-
-
 
             }).ToListAsync();
         }
@@ -111,6 +108,30 @@ namespace LMS.Areas.Admin.Repository
                     IssueBook.DeletedDate = DateTime.UtcNow;
                     IssueBook.DeletedBy = _userId;
                     _context.Entry(IssueBook).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ReturnedIssuedBook(int id, bool status)
+        {
+            try
+            {
+                var issuedBook = await _context.IssueBook.FindAsync(id);
+                if (issuedBook != null)
+                {
+                    issuedBook.ReturnStatus = true;
+                    issuedBook.ReturnDate = DateTime.UtcNow;
+                    _context.Entry(issuedBook).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return true;
                 }

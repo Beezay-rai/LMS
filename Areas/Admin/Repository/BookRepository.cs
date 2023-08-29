@@ -25,7 +25,7 @@ namespace LMS.Areas.Admin.Repository
             {
                 Id=x.Id,
                 Name = x.Name,
-                AuthorId = x.AuthorId,
+                AuthorName = x.AuthorName,
                 CategoryId = x.CategoryId,
                 CategoryName=x.Category.Name,
             }).ToListAsync();
@@ -36,7 +36,7 @@ namespace LMS.Areas.Admin.Repository
             {
                 Id = x.Id,
                 Name = x.Name,
-                AuthorId = x.AuthorId,
+                AuthorName = x.AuthorName,
                 CategoryId = x.CategoryId
             }).FirstOrDefaultAsync();
         }
@@ -50,7 +50,7 @@ namespace LMS.Areas.Admin.Repository
                     if (book != null)
                     {
                         book.Name = model.Name;
-                        book.AuthorId = model.AuthorId;
+                        book.AuthorName = model.AuthorName;
                         book.CategoryId = model.CategoryId;
                         book.Deleted= false;
                         book.UpdatedBy = _userId;
@@ -65,7 +65,7 @@ namespace LMS.Areas.Admin.Repository
                     Book book = new Book()
                     {
                         Name = model.Name,
-                        AuthorId = model.AuthorId,
+                        AuthorName = model.AuthorName,
                         CategoryId = model.CategoryId,
                         Deleted = false,
                         CreatedBy=_userId,

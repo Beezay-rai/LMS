@@ -9,7 +9,7 @@ namespace LMS.Data
         public int BookId { get; set; }
         public int StudentId { get; set; }
         [DataType(DataType.Date)]
-        public DateTime ReturnDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
         public string Remarks { get; set; }
         public bool ReturnStatus { get; set; }
 

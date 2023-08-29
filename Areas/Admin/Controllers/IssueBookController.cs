@@ -8,8 +8,7 @@ namespace LMS.Areas.Admin.Controllers
 {
     [Route("api/Admin/[controller]/[action]")]
     [ApiController]
-    //[IssueBookize]
-    [AllowAnonymous]
+    [Authorize]
     public class IssueBookController : ControllerBase
     {
         private readonly IIssueBook _IssueBook;
@@ -51,6 +50,11 @@ namespace LMS.Areas.Admin.Controllers
             var data = await _IssueBook.DeleteIssueBook(id);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted IssueBook" : "Not Deleted Try Again", Data = data });
         }
-
+        [HttpPost]
+        public async Task<IActionResult> ReturnIssuedBook(int id,bool status)
+        {
+            var data = await _IssueBook.ReturnedIssuedBook(id,status);
+            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated IssueBook" : "Not Deleted Try Again", Data = data });
+        }
     }
 }

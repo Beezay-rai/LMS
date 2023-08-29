@@ -8,8 +8,7 @@ namespace LMS.Areas.Admin.Controllers
 {
     [Route("api/Admin/[controller]/[action]")]
     [ApiController]
-    //[Staffize]
-    [AllowAnonymous]
+    [Authorize]
     public class StaffController : ControllerBase
     {
         private readonly IStaff _Staff;

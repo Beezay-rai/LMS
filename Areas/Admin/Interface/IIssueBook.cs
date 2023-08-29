@@ -9,5 +9,6 @@ namespace LMS.Areas.Admin.Interface
         Task<IssueBookGETViewModel> GetIssueBookById(int id);
         Task<bool> InsertUpdateIssueBook(IssueBookViewModel model);
         Task<bool> DeleteIssueBook(int id);
+        Task<bool> ReturnedIssuedBook(int id,bool status);
     }
 }

@@ -8,8 +8,7 @@ namespace LMS.Areas.Admin.Controllers
 {
     [Route("api/Admin/[controller]/[action]")]
     [ApiController]
-    //[Studentize]
-    [AllowAnonymous]
+    [Authorize]
     public class StudentController : ControllerBase
     {
         private readonly IStudent _Student;

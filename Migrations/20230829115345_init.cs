@@ -51,50 +51,6 @@ namespace LMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Author",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Author", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Borrower",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IssuedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IssuedBy = table.Column<int>(type: "int", nullable: false),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Borrower", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Category",
                 columns: table => new
                 {
@@ -104,14 +60,34 @@ namespace LMS.Migrations
                     Deleted = table.Column<bool>(type: "bit", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Faculty",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Faculty", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -263,7 +239,7 @@ namespace LMS.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AuthorId = table.Column<int>(type: "int", nullable: false),
+                    AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -277,12 +253,6 @@ namespace LMS.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Book", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Book_Author_AuthorId",
-                        column: x => x.AuthorId,
-                        principalTable: "Author",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Book_Category_CategoryId",
                         column: x => x.CategoryId,
@@ -298,8 +268,9 @@ namespace LMS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     GenderId = table.Column<int>(type: "int", nullable: false),
+                    FacultyId = table.Column<int>(type: "int", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: true),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -321,16 +292,17 @@ namespace LMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Return",
+                name: "IssueBook",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     BookId = table.Column<int>(type: "int", nullable: false),
-                    BorrowerId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
                     ReturnDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Deleted = table.Column<bool>(type: "bit", nullable: true),
                     Remarks = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReturnStatus = table.Column<bool>(type: "bit", nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -340,17 +312,17 @@ namespace LMS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Return", x => x.Id);
+                    table.PrimaryKey("PK_IssueBook", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Return_Book_BookId",
+                        name: "FK_IssueBook_Book_BookId",
                         column: x => x.BookId,
                         principalTable: "Book",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Return_Borrower_BorrowerId",
-                        column: x => x.BorrowerId,
-                        principalTable: "Borrower",
+                        name: "FK_IssueBook_Student_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Student",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -395,24 +367,19 @@ namespace LMS.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Book_AuthorId",
-                table: "Book",
-                column: "AuthorId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Book_CategoryId",
                 table: "Book",
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Return_BookId",
-                table: "Return",
+                name: "IX_IssueBook_BookId",
+                table: "IssueBook",
                 column: "BookId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Return_BorrowerId",
-                table: "Return",
-                column: "BorrowerId");
+                name: "IX_IssueBook_StudentId",
+                table: "IssueBook",
+                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Student_GenderId",
@@ -438,13 +405,13 @@ namespace LMS.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Return");
+                name: "Faculty");
+
+            migrationBuilder.DropTable(
+                name: "IssueBook");
 
             migrationBuilder.DropTable(
                 name: "Staff");
-
-            migrationBuilder.DropTable(
-                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -456,16 +423,13 @@ namespace LMS.Migrations
                 name: "Book");
 
             migrationBuilder.DropTable(
-                name: "Borrower");
-
-            migrationBuilder.DropTable(
-                name: "Gender");
-
-            migrationBuilder.DropTable(
-                name: "Author");
+                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "Category");
+
+            migrationBuilder.DropTable(
+                name: "Gender");
         }
     }
 }

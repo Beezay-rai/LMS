@@ -12,11 +12,8 @@ namespace LMS.Data
 
         public DbSet<Book> Book { get; set; }
         public DbSet<Student> Student { get; set; }
-        public DbSet<Author> Author { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Staff> Staff { get; set; }
-        public DbSet<Return> Return { get; set; }
-        public DbSet<Borrower> Borrower { get; set; }
         public DbSet<IssueBook> IssueBook { get; set; }
         public DbSet<Faculty> Faculty { get; set; }
 

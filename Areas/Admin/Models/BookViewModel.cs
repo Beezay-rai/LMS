@@ -6,7 +6,7 @@ namespace LMS.Areas.Admin.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int AuthorId { get; set; }
+        public string AuthorName { get; set; }
         public string CategoryName{ get; set; }
         public int CategoryId { get; set; }
 
@@ -17,7 +17,7 @@ namespace LMS.Areas.Admin.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public int AuthorId { get; set; }
+        public string AuthorName { get; set; }
         [Required]  
         public int CategoryId { get; set; }
     }
