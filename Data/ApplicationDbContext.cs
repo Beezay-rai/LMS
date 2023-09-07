@@ -16,6 +16,7 @@ namespace LMS.Data
         public DbSet<Staff> Staff { get; set; }
         public DbSet<IssueBook> IssueBook { get; set; }
         public DbSet<Faculty> Faculty { get; set; }
+        public DbSet<Gender> Gender { get; set; }
 
     }
 }

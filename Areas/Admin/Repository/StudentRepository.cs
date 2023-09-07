@@ -53,6 +53,7 @@ namespace LMS.Areas.Admin.Repository
                         student.LastName = model.LastName;
                         student.BirthDate = model.BirthDate;
                         student.GenderId = model.GenderId;
+                        student.FacultyId = model.FacultyId;
                         student.UpdatedDate = DateTime.UtcNow;
                         student.UpdatedBy = _userId;
 
@@ -69,6 +70,7 @@ namespace LMS.Areas.Admin.Repository
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
                         GenderId = model.GenderId,
+                        FacultyId = model.FacultyId,
                         CreatedBy = _userId,
                         CreatedDate = DateTime.UtcNow,
                         Deleted = false

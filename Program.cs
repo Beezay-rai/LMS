@@ -78,6 +78,7 @@ builder.Services.AddTransient<IStudent, StudentRepository>();
 builder.Services.AddTransient<IFaculty, FacultyRepository>();
 builder.Services.AddTransient<IIssueBook, IssueBookRepository>();
 builder.Services.AddTransient<ICategory, CategoryRepository>();
+builder.Services.AddTransient<ICommon, CommonRepository>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Initialize the app");
@@ -86,6 +87,7 @@ app.Logger.LogInformation("Initialize the app");
 using (var scope = app.Services.CreateScope())
 {
     CreateRolesAndAdministrator(scope.ServiceProvider);
+    AddRequiredData(scope.ServiceProvider);
 }
 
 // Configure the HTTP request pipeline.
@@ -190,4 +192,41 @@ void AddUserToRole(IServiceProvider serviceProvider, ApplicationUser user, strin
     Task<IdentityResult> newUserRole = userManager.AddToRoleAsync(appUser, roleName);
     newUserRole.Wait();
 }
+#endregion
+
+
+#region Required Data For Lms
+void AddRequiredData(IServiceProvider serviceProvider)
+{
+    using var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+
+    #region Gender
+    var listOfGender = new List<Gender>
+    {
+       new Gender(){Id = 1,Name="Male"},
+       new Gender(){Id = 2,Name="Female"}
+    };
+    using(var transaction = context.Database.BeginTransaction())
+    {
+        try
+        {
+            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Gender] On");
+            foreach(var gender in listOfGender)
+            {
+                if (context.Gender.Any(x => x.Id == gender.Id)) continue;
+                context.Gender.Add(gender);
+                context.SaveChanges();
+            }
+            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Gender] Off");
+            transaction.Commit();
+        }
+        catch
+        {
+            transaction.Rollback();
+        }
+
+    }
+    #endregion
+}
+
 #endregion
