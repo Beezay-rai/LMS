@@ -129,7 +129,7 @@ namespace LMS.Areas.Admin.Repository
                 var issuedBook = await _context.IssueBook.FindAsync(id);
                 if (issuedBook != null)
                 {
-                    issuedBook.ReturnStatus = true;
+                    issuedBook.ReturnStatus = status;
                     issuedBook.ReturnDate = DateTime.UtcNow;
                     _context.Entry(issuedBook).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
