@@ -27,6 +27,8 @@ namespace LMS.Areas.Admin.Repository
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
                 GenderId = x.GenderId,
+                FacultyId = x.FacultyId,
+                
             }).ToListAsync();
         }
         public async Task<StudentViewModel> GetStudentById(int id)
@@ -38,6 +40,7 @@ namespace LMS.Areas.Admin.Repository
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
                 GenderId = x.GenderId,
+                FacultyId=x.FacultyId
             }).FirstOrDefaultAsync();
         }
         public async Task<bool> InsertUpdateStudent(StudentViewModel model)
@@ -58,7 +61,6 @@ namespace LMS.Areas.Admin.Repository
                         student.UpdatedBy = _userId;
 
                         _context.Entry(student).State = EntityState.Modified;
-                        return true;
                     }
                     else { return false; }
                 }
@@ -88,7 +90,7 @@ namespace LMS.Areas.Admin.Repository
         public async Task<bool> DeleteStudent(int id)
         {
             var data = await _context.Student.Where(x => x.Id == id && x.Deleted == false).FirstOrDefaultAsync();
-            if (data != null)
+            if (data != null && data.Deleted==false)
             {
                 data.Deleted = true;
                 data.DeletedDate = DateTime.UtcNow;

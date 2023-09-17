@@ -67,8 +67,6 @@ namespace LMS.Areas.Admin.Repository
                         IssueBook.UpdatedDate = DateTime.UtcNow;
                         IssueBook.Deleted = false;
                         _context.Entry(IssueBook).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
-                        return true;
                     }
                     else { return false; }
                 }
@@ -89,7 +87,6 @@ namespace LMS.Areas.Admin.Repository
                     await _context.IssueBook.AddAsync(IssueBook);
                 }
                 await _context.SaveChangesAsync();
-
                 return true;
             }
             catch (Exception ex)
@@ -127,7 +124,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var issuedBook = await _context.IssueBook.FindAsync(id);
-                if (issuedBook != null)
+                if (issuedBook != null && issuedBook.Deleted==false)
                 {
                     issuedBook.ReturnStatus = status;
                     issuedBook.ReturnDate = DateTime.UtcNow;

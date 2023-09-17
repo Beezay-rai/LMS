@@ -49,7 +49,6 @@ namespace LMS.Areas.Admin.Repository
                         Faculty.UpdatedBy = _userId;
                         Faculty.UpdatedDate = DateTime.UtcNow;
                         _context.Entry(Faculty).State = EntityState.Modified;
-                        return true;
                     }
                     else { return false; }
                 }
@@ -77,7 +76,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var Faculty = await _context.Faculty.FindAsync(id);
-                if (Faculty != null)
+                if (Faculty != null && Faculty.Deleted==false)
                 {
                     Faculty.Deleted = true;
                     Faculty.DeletedBy = _userId;

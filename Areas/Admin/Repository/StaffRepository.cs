@@ -62,8 +62,6 @@ namespace LMS.Areas.Admin.Repository
                         staff.UpdatedDate = DateTime.UtcNow;
                         staff.UpdatedBy = _userId;
                         _context.Entry(staff).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
-                        return true;
                     }
                     else
                     {
@@ -98,7 +96,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var staff = await _context.Staff.FindAsync(id);
-                if (staff != null)
+                if (staff != null && staff.Deleted==false)
                 {
                     staff.Deleted = true;
                     staff.DeletedDate = DateTime.UtcNow;

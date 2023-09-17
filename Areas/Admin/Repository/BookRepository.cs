@@ -56,7 +56,6 @@ namespace LMS.Areas.Admin.Repository
                         book.UpdatedBy = _userId;
                         book.UpdatedDate= DateTime.UtcNow;
                         _context.Entry(book).State = EntityState.Modified;
-                        return true;
                     }
                     else { return false; }
                 }
@@ -86,7 +85,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var Book = await _context.Book.FindAsync(id);
-                if (Book != null)
+                if (Book != null && Book.Deleted==false)
                 {
                     Book.Deleted = true;
                     Book.DeletedBy=_userId;

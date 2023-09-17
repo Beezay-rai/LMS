@@ -49,7 +49,6 @@ namespace LMS.Areas.Admin.Repository
                         Category.UpdatedBy = _userId;
                         Category.UpdatedDate = DateTime.UtcNow;
                         _context.Entry(Category).State = EntityState.Modified;
-                        return true;
                     }
                     else { return false; }
                 }
@@ -77,7 +76,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var Category = await _context.Category.FindAsync(id);
-                if (Category != null)
+                if (Category != null && Category.Deleted==false)
                 {
                     Category.Deleted = true;
                     Category.DeletedBy = _userId;
