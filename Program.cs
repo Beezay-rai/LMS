@@ -78,6 +78,7 @@ builder.Services.AddTransient<IStudent, StudentRepository>();
 builder.Services.AddTransient<IFaculty, FacultyRepository>();
 builder.Services.AddTransient<IIssueBook, IssueBookRepository>();
 builder.Services.AddTransient<ICategory, CategoryRepository>();
+builder.Services.AddTransient<IDashboard, DashboardRepository>();
 builder.Services.AddTransient<ICommon, CommonRepository>();
 
 var app = builder.Build();
