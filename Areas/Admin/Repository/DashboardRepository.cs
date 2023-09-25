@@ -2,6 +2,7 @@
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace LMS.Areas.Admin.Repository
 {
@@ -18,10 +19,20 @@ namespace LMS.Areas.Admin.Repository
         {
             var data = new DashboardViewModel()
             {
-                BookCount = await _context.Book.Where(x=>x.Deleted==false).CountAsync(),
+                BookCount = await _context.Book.Where(x=>x.Deleted==false).CountAsync() ,
                 IssuedCount = await _context.IssueBook.Where(x=>x.Deleted==false).CountAsync(),
                 StudentCount = await _context.Student.Where(x=>x.Deleted==false).CountAsync(),
             };
+
+            //var test = await (from bk in _context.Book
+            //                  join iss in _context.IssueBook on bk.Id equals iss.BookId
+            //                  join cat in _context.Category on bk.CategoryId equals cat.Id
+            //                  select new PreferenceCount()
+            //                  {
+            //                  }
+
+            //                 ).Take(5).ToListAsync();
+
             foreach (var item in await _context.Category.Where(x=>x.Deleted == false).ToListAsync())
             {
                 var count = new PreferenceCount()
@@ -33,6 +44,19 @@ namespace LMS.Areas.Admin.Repository
                 data.PreferenceCountList.Add(count);
 
             }
+            var days = DateTimeFormatInfo.InvariantInfo.DayNames.Where(d => !string.IsNullOrEmpty(d)).ToList();
+            foreach (var dayName in days)
+             {
+                int dayId = days.IndexOf(dayName )+1;
+                var count = new UserActivityCount()
+                {
+                    MonthName = dayName,
+                    PresentCount = _context.IssueBook.Where(x => x.CreatedDate.Day == dayId && x.CreatedDate.Day == DateTime.Now.Day).Count(),
+                    PreviousCount = _context.IssueBook.Where(x => x.CreatedDate.Day == dayId && x.CreatedDate.Day == (DateTime.Now.Day)).Count(),
+                };
+                data.UserActivityCountList.Add(count);
+            }
+
             return data;
         }
     }

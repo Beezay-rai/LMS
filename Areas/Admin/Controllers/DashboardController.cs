@@ -10,7 +10,7 @@ namespace LMS.Areas.Admin.Controllers
     [ApiController]
     public class DashboardController : ControllerBase
     {
-        private readonly IDashboard _dashboard = null;
+        private readonly IDashboard _dashboard ;
         public DashboardController(IDashboard dashboard)
         {
             _dashboard = dashboard;
