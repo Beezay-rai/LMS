@@ -44,15 +44,15 @@ namespace LMS.Areas.Admin.Repository
                 data.PreferenceCountList.Add(count);
 
             }
-            var days = DateTimeFormatInfo.InvariantInfo.DayNames.Where(d => !string.IsNullOrEmpty(d)).ToList();
-            foreach (var dayName in days)
+            var month = DateTimeFormatInfo.InvariantInfo.MonthNames.Where(d => !string.IsNullOrEmpty(d)).ToList();
+            foreach (var monthName in month)
              {
-                int dayId = days.IndexOf(dayName )+1;
+                int monthId = month.IndexOf(monthName )+1;
                 var count = new UserActivityCount()
                 {
-                    MonthName = dayName,
-                    PresentCount = _context.IssueBook.Where(x => x.CreatedDate.Day == dayId && x.CreatedDate.Day == DateTime.Now.Day).Count(),
-                    PreviousCount = _context.IssueBook.Where(x => x.CreatedDate.Day == dayId && x.CreatedDate.Day == (DateTime.Now.Day)).Count(),
+                    MonthName = monthName,
+                    PresentCount = _context.IssueBook.Where(x => x.CreatedDate.Month == monthId ).Count(),
+                    PreviousCount = _context.IssueBook.Where(x => x.CreatedDate.Day == monthId && x.CreatedDate.Day == (DateTime.Now.Day)).Count(),
                 };
                 data.UserActivityCountList.Add(count);
             }
