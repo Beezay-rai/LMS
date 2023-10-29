@@ -140,22 +140,11 @@ void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
         Email = administratorUserEmail,
         UserName = administratorUserEmail,
         EmailConfirmed = true,
-        LockoutEnabled = false
+        LockoutEnabled = false,
+        Active = true,  
     }, administratorPwd, UserRoles.Administrator);
 
-    //SuperAdmin User Setup
-    const string superAdminUserEmail = "Superadmin@gmail.com";
-    const string superAdminPwd = "Superadmin@4744";
-    AddUserToRole(serviceProvider, new ApplicationUser()
-    {
-        FirstName = "Super",
-        LastName = "Admin",
-        Email = superAdminUserEmail,
-        UserName = superAdminUserEmail,
-        EmailConfirmed = true,
-        LockoutEnabled = false
-
-    }, superAdminPwd, UserRoles.SuperAdmin);
+ 
 
 }
 //<Summary>
