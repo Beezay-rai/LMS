@@ -13,8 +13,7 @@ namespace LMS.Data
         public string Remarks { get; set; }
         public bool ReturnStatus { get; set; }
 
-        [ForeignKey(nameof(StudentId))]
-        public Student Student { get; set; }  
+     
 
         [ForeignKey(nameof(BookId))]
         public Book Book { get; set; }  

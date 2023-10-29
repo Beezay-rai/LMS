@@ -15,13 +15,13 @@ namespace LMS.Areas.Admin.Repository
             _context = context;
         }
 
-        public async Task<DashboardViewModel> GetDashboardData()
+        public async Task<DashboardModel> GetDashboardData()
         {
-            var data = new DashboardViewModel()
+            var data = new DashboardModel()
             {
                 BookCount = await _context.Book.Where(x=>x.Deleted==false).CountAsync() ,
                 IssuedCount = await _context.IssueBook.Where(x=>x.Deleted==false).CountAsync(),
-                StudentCount = await _context.Student.Where(x=>x.Deleted==false).CountAsync(),
+                //StudentCount = await _context.Student.Where(x=>x.Deleted==false).CountAsync(),
             };
 
             //var test = await (from bk in _context.Book
@@ -39,7 +39,7 @@ namespace LMS.Areas.Admin.Repository
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    Count = await _context.IssueBook.Where(x => x.Book.CategoryId == item.Id).CountAsync()
+                    //Count = await _context.IssueBook.Where(x => x.Book.CategoryId == item.Id).CountAsync()
                 };
                 data.PreferenceCountList.Add(count);
 

@@ -4,9 +4,9 @@ namespace LMS.Areas.Admin.Interface
 {
     public interface IStudent
     {
-        Task<List<StudentViewModel>> GetAllStudent();
-        Task<StudentViewModel> GetStudentById(int id);
-        Task<bool> InsertUpdateStudent(StudentViewModel model);
+        Task<List<StudentModel>> GetAllStudent();
+        Task<StudentModel> GetStudentById(int id);
+        Task<bool> InsertUpdateStudent(StudentModel model);
         Task<bool> DeleteStudent(int id);
     }
 }

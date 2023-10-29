@@ -31,14 +31,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory(CategoryViewModel model)
+        public async Task<IActionResult> CreateCategory(CategoryModel model)
         {
             var data = await _Category.InsertUpdateCategory(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Category" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditCategory(CategoryViewModel model)
+        public async Task<IActionResult> EditCategory(CategoryModel model)
         {
             var data = await _Category.InsertUpdateCategory(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Category" : "Not Updated Try Again", Data = data });

@@ -19,23 +19,23 @@ namespace LMS.Areas.Admin.Repository
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public async Task<List<CategoryViewModel>> GetAllCategory()
+        public async Task<List<CategoryModel>> GetAllCategory()
         {
-            return await _context.Category.Where(x => x.Deleted == false).Select(x => new CategoryViewModel()
+            return await _context.Category.Where(x => x.Deleted == false).Select(x => new CategoryModel()
             {
                 Id = x.Id,
                 Name = x.Name,
             }).ToListAsync();
         }
-        public async Task<CategoryViewModel> GetCategoryById(int id)
+        public async Task<CategoryModel> GetCategoryById(int id)
         {
-            return await _context.Category.Where(x => x.Id == id && x.Deleted == false).Select(x => new CategoryViewModel()
+            return await _context.Category.Where(x => x.Id == id && x.Deleted == false).Select(x => new CategoryModel()
             {
                 Id = x.Id,
                 Name = x.Name,
             }).FirstOrDefaultAsync();
         }
-        public async Task<bool> InsertUpdateCategory(CategoryViewModel model)
+        public async Task<bool> InsertUpdateCategory(CategoryModel model)
         {
             try
             {

@@ -19,28 +19,32 @@ namespace LMS.Areas.Admin.Repository
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public async Task<List<BookGETViewModel>> GetAllBook()
+        public async Task<List<BookGETModel>> GetAllBook()
         {
-            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookGETViewModel()
+            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookGETModel()
             {
                 Id=x.Id,
                 Name = x.Name,
                 AuthorName = x.AuthorName,
-                CategoryId = x.CategoryId,
-                CategoryName=x.Category.Name,
+                BookCategoryGetList = _context.BookCategory.Where(y=>y.BookId == x.Id).Select(y=> new BookCategoryGetModel()
+                {
+                    Id=y.Id,
+                    BookName=y.Book.Name,
+                    CategoryName=y.Category.Name,
+                }).ToList(),
+               
             }).ToListAsync();
         }
-        public async Task<BookViewModel> GetBookById(int id)
+        public async Task<BookModel> GetBookById(int id)
         {
-            return await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookViewModel()
+            return await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookModel()
             {
                 Id = x.Id,
                 Name = x.Name,
                 AuthorName = x.AuthorName,
-                CategoryId = x.CategoryId
             }).FirstOrDefaultAsync();
         }
-        public async Task<bool> InsertUpdateBook(BookViewModel model)
+        public async Task<bool> InsertUpdateBook(BookModel model)
         {
             try
             {
@@ -51,7 +55,6 @@ namespace LMS.Areas.Admin.Repository
                     {
                         book.Name = model.Name;
                         book.AuthorName = model.AuthorName;
-                        book.CategoryId = model.CategoryId;
                         book.Deleted= false;
                         book.UpdatedBy = _userId;
                         book.UpdatedDate= DateTime.UtcNow;
@@ -65,7 +68,7 @@ namespace LMS.Areas.Admin.Repository
                     {
                         Name = model.Name,
                         AuthorName = model.AuthorName,
-                        CategoryId = model.CategoryId,
+                        Total=model.Total,
                         Deleted = false,
                         CreatedBy=_userId,
                         CreatedDate= DateTime.UtcNow
@@ -99,7 +102,7 @@ namespace LMS.Areas.Admin.Repository
                     return false;
                 }
             }
-            catch (Exception ex)
+            catch (Exception )
             {
                 return false;
             }

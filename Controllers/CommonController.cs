@@ -24,5 +24,18 @@ namespace LMS.Controllers
             var data = await _common.GetGender();
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "Generated Sucessfully" :"Not Generated Try Again !!",Data=data});
         }
+        [HttpGet]
+        public async Task<IActionResult> GetRoles()
+        {
+            var data = await _common.GetRoles();
+            return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "Generated Sucessfully" :"Not Generated Try Again !!",Data=data});
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllUser()
+        {
+            var data = await _common.GetAllUser();
+            return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "Generated Sucessfully" :"Not Generated Try Again !!",Data=data});
+        }
+
     }
 }

@@ -11,11 +11,10 @@ namespace LMS.Data
         { }
 
         public DbSet<Book> Book { get; set; }
-        public DbSet<Student> Student { get; set; }
+        public DbSet<BookCategory> BookCategory { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Staff> Staff { get; set; }
         public DbSet<IssueBook> IssueBook { get; set; }
-        public DbSet<Faculty> Faculty { get; set; }
         public DbSet<Gender> Gender { get; set; }
 
     }

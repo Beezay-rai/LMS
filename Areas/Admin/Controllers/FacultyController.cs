@@ -31,14 +31,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateFaculty(FacultyViewModel model)
+        public async Task<IActionResult> CreateFaculty(FacultyModel model)
         {
             var data = await _Faculty.InsertUpdateFaculty(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Faculty" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditFaculty(FacultyViewModel model)
+        public async Task<IActionResult> EditFaculty(FacultyModel model)
         {
             var data = await _Faculty.InsertUpdateFaculty(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Faculty" : "Not Updated Try Again", Data = data });

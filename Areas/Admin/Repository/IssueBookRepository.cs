@@ -17,9 +17,9 @@ namespace LMS.Areas.Admin.Repository
             _contextAccessor = contextAccessor;
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
-        public async Task<List<IssueBookGETViewModel>> GetAllIssueBook()
+        public async Task<List<IssueBookGETModel>> GetAllIssueBook()
         {
-            return await _context.IssueBook.Where(x => x.Deleted == false).Select(x => new IssueBookGETViewModel
+            return await _context.IssueBook.Where(x => x.Deleted == false).Select(x => new IssueBookGETModel
             {
                 Id = x.Id,
                 BookId = x.BookId,
@@ -29,14 +29,14 @@ namespace LMS.Areas.Admin.Repository
                 Remarks = x.Remarks,
                 ReturnStatus = x.ReturnStatus,
                 StudentId = x.StudentId,
-                StudentFullName = x.Student.FirstName + " " + x.Student.LastName,
+                //StudentFullName = x.Student.FirstName + " " + x.Student.LastName,
 
             }).ToListAsync();
         }
 
-        public async Task<IssueBookGETViewModel> GetIssueBookById(int id)
+        public async Task<IssueBookGETModel> GetIssueBookById(int id)
         {
-            return await _context.IssueBook.Where(x => x.Id == id && x.Deleted == false).Select(x => new IssueBookGETViewModel()
+            return await _context.IssueBook.Where(x => x.Id == id && x.Deleted == false).Select(x => new IssueBookGETModel()
             {
                 Id = x.Id,
                 BookId = x.BookId,
@@ -46,10 +46,10 @@ namespace LMS.Areas.Admin.Repository
                 Remarks = x.Remarks,
                 ReturnStatus = x.ReturnStatus,
                 StudentId = x.StudentId,
-                StudentFullName = x.Student.FirstName + " " + x.Student.LastName,
+                //StudentFullName = x.Student.FirstName + " " + x.Student.LastName,
             }).FirstOrDefaultAsync();
         }
-        public async Task<bool> InsertUpdateIssueBook(IssueBookViewModel model)
+        public async Task<bool> InsertUpdateIssueBook(IssueBookModel model)
         {
             try
             {

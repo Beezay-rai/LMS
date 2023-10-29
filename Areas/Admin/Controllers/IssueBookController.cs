@@ -31,14 +31,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateIssueBook(IssueBookViewModel model)
+        public async Task<IActionResult> CreateIssueBook(IssueBookModel model)
         {
             var data = await _IssueBook.InsertUpdateIssueBook(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created IssueBook" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditIssueBook(IssueBookViewModel model)
+        public async Task<IActionResult> EditIssueBook(IssueBookModel model)
         {
             var data = await _IssueBook.InsertUpdateIssueBook(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated IssueBook" : "Not Updated Try Again", Data = data });

@@ -31,14 +31,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStaff(StaffViewModel model)
+        public async Task<IActionResult> CreateStaff(StaffModel model)
         {
             var data = await _Staff.InsertUpdateStaff(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Staff" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-        public async Task<IActionResult> EditStaff(StaffViewModel model)
+        public async Task<IActionResult> EditStaff(StaffModel model)
         {
             var data = await _Staff.InsertUpdateStaff(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Staff" : "Not Updated Try Again", Data = data });

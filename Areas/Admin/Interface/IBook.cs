@@ -5,9 +5,9 @@ namespace LMS.Areas.Admin.Interface
     public interface IBook
     {
 
-        Task<List<BookGETViewModel>> GetAllBook();
-        Task<BookViewModel> GetBookById(int id);
-        Task<bool> InsertUpdateBook(BookViewModel model);
+        Task<List<BookGETModel>> GetAllBook();
+        Task<BookModel> GetBookById(int id);
+        Task<bool> InsertUpdateBook(BookModel model);
         Task<bool> DeleteBook(int id);
     }
 }

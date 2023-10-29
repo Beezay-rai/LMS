@@ -4,6 +4,6 @@ namespace LMS.Areas.Admin.Interface
 {
     public interface IDashboard
     {
-        Task<DashboardViewModel> GetDashboardData();
+        Task<DashboardModel> GetDashboardData();
     }
 }

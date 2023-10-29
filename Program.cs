@@ -74,8 +74,8 @@ builder.Services.AddSwaggerGen(options =>
 //Register Here
 builder.Services.AddTransient<IAccount, AccountRepository>();
 builder.Services.AddTransient<IBook, BookRepository>();
-builder.Services.AddTransient<IStudent, StudentRepository>();
-builder.Services.AddTransient<IFaculty, FacultyRepository>();
+//builder.Services.AddTransient<IStudent, StudentRepository>();
+//builder.Services.AddTransient<IFaculty, FacultyRepository>();
 builder.Services.AddTransient<IIssueBook, IssueBookRepository>();
 builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
@@ -137,26 +137,12 @@ void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
     {
         FirstName = "Yuki",
         LastName = "Rei",
+        Active= true,
         Email = administratorUserEmail,
         UserName = administratorUserEmail,
         EmailConfirmed = true,
         LockoutEnabled = false
     }, administratorPwd, UserRoles.Administrator);
-
-    //SuperAdmin User Setup
-    const string superAdminUserEmail = "Superadmin@gmail.com";
-    const string superAdminPwd = "Superadmin@4744";
-    AddUserToRole(serviceProvider, new ApplicationUser()
-    {
-        FirstName = "Super",
-        LastName = "Admin",
-        Email = superAdminUserEmail,
-        UserName = superAdminUserEmail,
-        EmailConfirmed = true,
-        LockoutEnabled = false
-
-    }, superAdminPwd, UserRoles.SuperAdmin);
-
 }
 //<Summary>
 //Create a role if not exists
