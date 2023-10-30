@@ -6,7 +6,7 @@ namespace LMS.Interface
 {
     public interface IAccount
     {
-        Task<IdentityResult> SignUp(SignUpModel model);
+        Task<bool> SignUp(SignUpModel model);
         Task<string> Login(LoginModel model);
     }
 }

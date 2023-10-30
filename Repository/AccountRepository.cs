@@ -1,6 +1,8 @@
-﻿using LMS.Interface;
+﻿using LMS.Data;
+using LMS.Interface;
 using LMS.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,25 +15,51 @@ namespace LMS.Repository
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
-
-        public AccountRepository(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        private readonly ApplicationDbContext _context;
+        public AccountRepository(UserManager<ApplicationUser> userManager,ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _context= context;
         }
 
-        public async Task<IdentityResult> SignUp(SignUpModel model)
+        public async Task<bool> SignUp(SignUpModel model)
         {
-            var user = new ApplicationUser()
-            {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                UserName = model.Email,
-                Email = model.Email,
-            };
-            return await _userManager.CreateAsync(user, model.Password);
-        }
+              using (var transaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var user = new ApplicationUser()
+                        {
+                            FirstName = model.FirstName,
+                            LastName = model.LastName,
+                            UserName = model.Email,
+                            Email = model.Email,
+                        };
+                        var abc = await _userManager.CreateAsync(user, model.Password);
+                        if (abc.Succeeded)
+                        {
+                            var b = await _userManager.AddToRoleAsync(user, model.Role);
+                            await transaction.CommitAsync();
+                            return true;
+                        }
+                        else
+                        {
+                            await transaction.RollbackAsync();
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        await transaction.RollbackAsync();
+                        return false;
+                    }
+                }
+
+            }
+
+        
 
         public async Task<string> Login(LoginModel model)
         {

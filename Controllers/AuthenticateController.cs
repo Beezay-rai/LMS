@@ -29,14 +29,15 @@ namespace LMS.Controllers
         }
         [HttpPost]
         [Route("api/SignUp")]
-        public async Task<IActionResult> SignUp([FromForm] SignUpModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
         {
             var result = await _account.SignUp(model);
-            if (result.Succeeded)
+            if (result)
             {
-                return Ok("Registered Sucessfully !!");
+                return Ok(new ApiResponse { Status = true, Message = "Registered Sucessfully !!" });
             }
-            return Unauthorized();
+            return Ok(new ApiResponse { Status = false, Message = "Failed to Register" });
         }
 
         [HttpPost]
