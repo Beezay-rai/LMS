@@ -18,15 +18,22 @@ namespace LMS.Areas.Admin.Repository
             _contextAccessor = contextAccessor;
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
+<<<<<<< HEAD
         public async Task<List<StudentGETModel>> GetAllStudent()
         {
             return await _context.Student.Where(x => x.Deleted == false).Select(x => new StudentGETModel()
+=======
+        public async Task<List<StudentViewModel>> GetAllStudent()
+        {
+            return await _context.Student.Where(x => x.Deleted == false).Select(x => new StudentViewModel()
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
                 GenderId = x.GenderId,
+<<<<<<< HEAD
                 GenderName = _context.Gender.Where(z=>z.Id == x.GenderId).Select(z => z.Name).FirstOrDefault(),
                 CourseId =x.CourseId,
                 CourseName = _context.Course.Where(z=>z.Id==x.CourseId).Select(x=>x.CourseName).FirstOrDefault(),
@@ -37,12 +44,22 @@ namespace LMS.Areas.Admin.Repository
         public async Task<StudentGETModel> GetStudentById(int id)
         {
             return await _context.Student.Where(x => x.Id == id && x.Deleted == false).Select(x => new StudentGETModel()
+=======
+                FacultyId = x.FacultyId,
+                
+            }).ToListAsync();
+        }
+        public async Task<StudentViewModel> GetStudentById(int id)
+        {
+            return await _context.Student.Where(x => x.Id == id && x.Deleted == false).Select(x => new StudentViewModel()
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
                 GenderId = x.GenderId,
+<<<<<<< HEAD
                 GenderName = _context.Gender.Where(z => z.Id == x.GenderId).Select(z => z.Name).FirstOrDefault(),
                 CourseId = x.CourseId,
                 CourseName = _context.Course.Where(z => z.Id == x.CourseId).Select(x => x.CourseName).FirstOrDefault(),
@@ -52,6 +69,12 @@ namespace LMS.Areas.Admin.Repository
             }).FirstOrDefaultAsync();
         }
         public async Task<bool> InsertUpdateStudent(StudentModel model)
+=======
+                FacultyId=x.FacultyId
+            }).FirstOrDefaultAsync();
+        }
+        public async Task<bool> InsertUpdateStudent(StudentViewModel model)
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         {
             try
             {
@@ -64,10 +87,14 @@ namespace LMS.Areas.Admin.Repository
                         student.LastName = model.LastName;
                         student.BirthDate = model.BirthDate;
                         student.GenderId = model.GenderId;
+<<<<<<< HEAD
                         student.CourseId = model.CourseId;
                         student.EmailAddress = model.EmailAddress;
                         student.PhoneNumber = model.PhoneNumber;
 
+=======
+                        student.FacultyId = model.FacultyId;
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                         student.UpdatedDate = DateTime.UtcNow;
                         student.UpdatedBy = _userId;
 
@@ -83,9 +110,13 @@ namespace LMS.Areas.Admin.Repository
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
                         GenderId = model.GenderId,
+<<<<<<< HEAD
                         EmailAddress=model.EmailAddress,
                         CourseId=model.CourseId,
                         PhoneNumber=model.PhoneNumber,
+=======
+                        FacultyId = model.FacultyId,
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                         CreatedBy = _userId,
                         CreatedDate = DateTime.UtcNow,
                         Deleted = false

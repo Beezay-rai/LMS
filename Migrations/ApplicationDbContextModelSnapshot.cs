@@ -34,9 +34,14 @@ namespace LMS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+<<<<<<< HEAD
                     b.Property<string>("BookName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+=======
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -54,6 +59,7 @@ namespace LMS.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
+<<<<<<< HEAD
                     b.Property<string>("ISBN")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -64,6 +70,12 @@ namespace LMS.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+=======
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -72,6 +84,7 @@ namespace LMS.Migrations
 
                     b.HasKey("Id");
 
+<<<<<<< HEAD
                     b.ToTable("Book");
                 });
 
@@ -130,6 +143,11 @@ namespace LMS.Migrations
                     b.HasIndex("TransactionId");
 
                     b.ToTable("BookTransaction");
+=======
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Book");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                 });
 
             modelBuilder.Entity("LMS.Data.Category", b =>
@@ -140,6 +158,7 @@ namespace LMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+<<<<<<< HEAD
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -164,6 +183,8 @@ namespace LMS.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -171,11 +192,13 @@ namespace LMS.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+<<<<<<< HEAD
                     b.Property<string>("Credits")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("Deleted")
+=======
+                    b.Property<bool?>("Deleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("DeletedBy")
@@ -184,12 +207,9 @@ namespace LMS.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Semester")
-                        .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
@@ -199,7 +219,61 @@ namespace LMS.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("LMS.Data.Faculty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+<<<<<<< HEAD
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
+=======
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+<<<<<<< HEAD
                     b.ToTable("Course");
+=======
+                    b.ToTable("Faculty");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                 });
 
             modelBuilder.Entity("LMS.Data.Gender", b =>
@@ -219,6 +293,64 @@ namespace LMS.Migrations
                     b.ToTable("Gender");
                 });
 
+<<<<<<< HEAD
+=======
+            modelBuilder.Entity("LMS.Data.IssueBook", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("ReturnDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("ReturnStatus")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("IssueBook");
+                });
+
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
             modelBuilder.Entity("LMS.Data.Staff", b =>
                 {
                     b.Property<int>("Id")
@@ -232,8 +364,12 @@ namespace LMS.Migrations
 
                     b.Property<string>("Contact")
                         .IsRequired()
+<<<<<<< HEAD
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
+=======
+                        .HasColumnType("nvarchar(max)");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 
                     b.Property<string>("CreatedBy")
                         .IsRequired()
@@ -285,9 +421,12 @@ namespace LMS.Migrations
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
 
+<<<<<<< HEAD
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -304,9 +443,14 @@ namespace LMS.Migrations
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");
 
+<<<<<<< HEAD
                     b.Property<string>("EmailAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+=======
+                    b.Property<int>("FacultyId")
+                        .HasColumnType("int");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -318,11 +462,14 @@ namespace LMS.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+<<<<<<< HEAD
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -331,13 +478,17 @@ namespace LMS.Migrations
 
                     b.HasKey("Id");
 
+<<<<<<< HEAD
                     b.HasIndex("CourseId");
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.HasIndex("GenderId");
 
                     b.ToTable("Student");
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("LMS.Data.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -377,6 +528,8 @@ namespace LMS.Migrations
                     b.ToTable("Transaction");
                 });
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
             modelBuilder.Entity("LMS.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -586,6 +739,7 @@ namespace LMS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+<<<<<<< HEAD
             modelBuilder.Entity("LMS.Data.BookCategoryDetail", b =>
                 {
                     b.HasOne("LMS.Data.Book", "Book")
@@ -594,18 +748,29 @@ namespace LMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+=======
+            modelBuilder.Entity("LMS.Data.Book", b =>
+                {
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.HasOne("LMS.Data.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<< HEAD
                     b.Navigation("Book");
 
                     b.Navigation("Category");
                 });
 
             modelBuilder.Entity("LMS.Data.BookTransaction", b =>
+=======
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("LMS.Data.IssueBook", b =>
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                 {
                     b.HasOne("LMS.Data.Book", "Book")
                         .WithMany()
@@ -619,6 +784,7 @@ namespace LMS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<< HEAD
                     b.HasOne("LMS.Data.Transaction", "Transaction")
                         .WithMany()
                         .HasForeignKey("TransactionId")
@@ -630,24 +796,35 @@ namespace LMS.Migrations
                     b.Navigation("Student");
 
                     b.Navigation("Transaction");
+=======
+                    b.Navigation("Book");
+
+                    b.Navigation("Student");
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                 });
 
             modelBuilder.Entity("LMS.Data.Student", b =>
                 {
+<<<<<<< HEAD
                     b.HasOne("LMS.Data.Course", "Course")
                         .WithMany()
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.HasOne("LMS.Data.Gender", "Gender")
                         .WithMany()
                         .HasForeignKey("GenderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<< HEAD
                     b.Navigation("Course");
 
+=======
+>>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                     b.Navigation("Gender");
                 });
 
