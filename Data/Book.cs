@@ -7,7 +7,6 @@ namespace LMS.Data
     {
         [Key]
         public int Id { get; set; }
-<<<<<<< HEAD
         [Required]
         public string BookName { get; set; }
         [Required]
@@ -21,17 +20,6 @@ namespace LMS.Data
         public DateTime PublicationDate { get;set; }
       
         public bool? Deleted { get; set; }
-=======
-        public string AuthorName { get; set; }
-        public int CategoryId { get; set; }
-        public bool? Deleted { get; set; }
-
-        public string Name { get; set; }
-       
-        [ForeignKey(nameof(CategoryId))]
-        public Category Category { get; set; }
-
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public string? UpdatedBy { get; set; }
@@ -39,7 +27,6 @@ namespace LMS.Data
         public string? DeletedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
     }
-<<<<<<< HEAD
 
 
     public class BookCategoryDetail
@@ -57,6 +44,4 @@ namespace LMS.Data
         [ForeignKey(nameof(BookId))]
         public Book Book { get; set; }
     }
-=======
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 }

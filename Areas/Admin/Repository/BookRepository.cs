@@ -10,21 +10,14 @@ namespace LMS.Areas.Admin.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
-<<<<<<< HEAD
         private readonly ILogger<BookRepository> _logger;
         private readonly string _userId;
 
         public BookRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor,ILogger<BookRepository>logger)
-=======
-        private readonly string _userId;
-
-        public BookRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         {
             _context = context;
             _contextAccessor = contextAccessor;
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-<<<<<<< HEAD
             _logger = logger;
         }
 
@@ -152,70 +145,6 @@ namespace LMS.Areas.Admin.Repository
 
             }
 
-=======
-        }
-
-        public async Task<List<BookGETViewModel>> GetAllBook()
-        {
-            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookGETViewModel()
-            {
-                Id=x.Id,
-                Name = x.Name,
-                AuthorName = x.AuthorName,
-                CategoryId = x.CategoryId,
-                CategoryName=x.Category.Name,
-            }).ToListAsync();
-        }
-        public async Task<BookViewModel> GetBookById(int id)
-        {
-            return await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookViewModel()
-            {
-                Id = x.Id,
-                Name = x.Name,
-                AuthorName = x.AuthorName,
-                CategoryId = x.CategoryId
-            }).FirstOrDefaultAsync();
-        }
-        public async Task<bool> InsertUpdateBook(BookViewModel model)
-        {
-            try
-            {
-                if (model.Id > 0)
-                {
-                    var book = await _context.Book.FindAsync(model.Id);
-                    if (book != null)
-                    {
-                        book.Name = model.Name;
-                        book.AuthorName = model.AuthorName;
-                        book.CategoryId = model.CategoryId;
-                        book.Deleted= false;
-                        book.UpdatedBy = _userId;
-                        book.UpdatedDate= DateTime.UtcNow;
-                        _context.Entry(book).State = EntityState.Modified;
-                    }
-                    else { return false; }
-                }
-                else
-                {
-                    Book book = new Book()
-                    {
-                        Name = model.Name,
-                        AuthorName = model.AuthorName,
-                        CategoryId = model.CategoryId,
-                        Deleted = false,
-                        CreatedBy=_userId,
-                        CreatedDate= DateTime.UtcNow
-                    };
-                    await _context.Book.AddAsync(book);
-                }
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         }
         public async Task<bool> DeleteBook(int id)
         {
@@ -238,10 +167,7 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-<<<<<<< HEAD
                 _logger.LogInformation($"Error , DateTime:{DateTime.UtcNow}, UserId:{_userId},Error Description:{ex} ");
-=======
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
                 return false;
             }
         }

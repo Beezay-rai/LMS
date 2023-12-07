@@ -31,22 +31,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-<<<<<<< HEAD
         public async Task<IActionResult> CreateBook(BookModel model)
-=======
-        public async Task<IActionResult> CreateBook(BookViewModel model)
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         {
             var data = await _Book.InsertUpdateBook(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Book" : "Not Created Try Again", Data = data });
         }
 
         [HttpPut]
-<<<<<<< HEAD
         public async Task<IActionResult> EditBook(BookModel model)
-=======
-        public async Task<IActionResult> EditBook(BookViewModel model)
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
         {
             var data = await _Book.InsertUpdateBook(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Book" : "Not Updated Try Again", Data = data });

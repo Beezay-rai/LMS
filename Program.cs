@@ -75,13 +75,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddTransient<IAccount, AccountRepository>();
 builder.Services.AddTransient<IBook, BookRepository>();
 builder.Services.AddTransient<IStudent, StudentRepository>();
-<<<<<<< HEAD
 builder.Services.AddTransient<ICourse, CourseRepository>();
 builder.Services.AddTransient<ITransaction, TransactionRepository>();
-=======
-builder.Services.AddTransient<IFaculty, FacultyRepository>();
-builder.Services.AddTransient<IIssueBook, IssueBookRepository>();
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
 builder.Services.AddTransient<ICommon, CommonRepository>();
@@ -146,17 +141,10 @@ void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
         UserName = administratorUserEmail,
         EmailConfirmed = true,
         LockoutEnabled = false,
-<<<<<<< HEAD
         Active = true,
     }, administratorPwd, UserRoles.Administrator);
 
 
-=======
-        Active = true,  
-    }, administratorPwd, UserRoles.Administrator);
-
- 
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
 
 }
 //<Summary>
@@ -208,20 +196,12 @@ void AddRequiredData(IServiceProvider serviceProvider)
        new Gender(){Id = 1,Name="Male"},
        new Gender(){Id = 2,Name="Female"}
     };
-<<<<<<< HEAD
     using (var transaction = context.Database.BeginTransaction())
-=======
-    using(var transaction = context.Database.BeginTransaction())
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
     {
         try
         {
             context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Gender] On");
-<<<<<<< HEAD
             foreach (var gender in listOfGender)
-=======
-            foreach(var gender in listOfGender)
->>>>>>> 67a1c07551f7e83831b7755c71f1dc67cd372c3f
             {
                 if (context.Gender.Any(x => x.Id == gender.Id)) continue;
                 context.Gender.Add(gender);
