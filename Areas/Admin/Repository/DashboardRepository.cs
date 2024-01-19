@@ -25,15 +25,16 @@ namespace LMS.Areas.Admin.Repository
             };
 
             //var test = await (from bk in _context.Book
-            //                  join iss in _context.Transaction on bk.Id equals iss.BookId
-            //                  join cat in _context.Category on bk.CategoryId equals cat.Id
+            //                  join tra in _context.BookTransaction on bk.Id equals tra.BookId
+
+            //                  join cat in _context.BookCategoryDetail on bk.CategoryId equals cat.Id
             //                  select new PreferenceCount()
             //                  {
             //                  }
 
             //                 ).Take(5).ToListAsync();
 
-            foreach (var item in await _context.Category.Where(x=>x.IsDeleted == false).ToListAsync())
+            foreach (var item in await _context.Category.Where(x=>x.IsDeleted == false).Take(2).ToListAsync())
             {
                 var count = new PreferenceCount()
                 {

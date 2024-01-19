@@ -31,7 +31,6 @@ namespace LMS.Areas.Admin.Models
         [Required]
         public string EmailAddress { get; set; }
         [Required]
-        [StringLength(10), MinLength(10)]
         public string PhoneNumber { get; set; }
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }

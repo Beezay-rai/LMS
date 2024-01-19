@@ -52,7 +52,7 @@ namespace LMS.Controllers
                 if (userCheck != null)
                 {
                     var userRoles = await _userManager.GetRolesAsync(userCheck);
-                    var role = userRoles.FirstOrDefault();
+                    var role = userRoles.FirstOrDefault()??" ";
                     var authClaims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Role, role),
