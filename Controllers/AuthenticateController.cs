@@ -33,11 +33,7 @@ namespace LMS.Controllers
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
         {
             var result = await _account.SignUp(model);
-            if (result)
-            {
-                return Ok(new ApiResponse { Status = true, Message = "Registered Sucessfully !!" });
-            }
-            return Ok(new ApiResponse { Status = false, Message = "Failed to Register" });
+            return Ok(result);
         }
 
         [HttpPost]

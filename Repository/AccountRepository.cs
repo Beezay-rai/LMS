@@ -16,50 +16,60 @@ namespace LMS.Repository
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
-        public AccountRepository(UserManager<ApplicationUser> userManager,ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AccountRepository(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            _context= context;
+            _context = context;
         }
 
-        public async Task<bool> SignUp(SignUpModel model)
+        public async Task<ApiResponse> SignUp(SignUpModel model)
         {
-              using (var transaction = _context.Database.BeginTransaction())
+            var response = new ApiResponse();
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    var newUser = new ApplicationUser()
                     {
-                        var user = new ApplicationUser()
-                        {
-                            FirstName = model.FirstName,
-                            LastName = model.LastName,
-                            UserName = model.Email,
-                            Email = model.Email,
-                        };
-                        var abc = await _userManager.CreateAsync(user, model.Password);
-                        if (abc.Succeeded)
-                        {
-                            var b = await _userManager.AddToRoleAsync(user, model.Role);
-                            await transaction.CommitAsync();
-                            return true;
-                        }
-                        else
-                        {
-                            await transaction.RollbackAsync();
-                            return false;
-                        }
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        UserName = model.Email,
+                        Email = model.Email,
+                    };
+                    var createUser = await _userManager.CreateAsync(newUser, model.Password);
+                    var addToRole = await _userManager.AddToRoleAsync(newUser, model.Role);
+                    if (createUser.Succeeded && addToRole.Succeeded)
+                    {
+                        response.Status = true;
+                        response.Message = "Successfully Created !";
+                        await transaction.CommitAsync();
+                       
                     }
-                    catch (Exception ex)
+                    else
                     {
+                        response.Status = false;
+                        response.Data = createUser.Errors.Select(x => x.Description).Concat(  addToRole.Errors.Select(x=>x.Description)) ;
+                        response.Message = "Error in creating new user !" ;
                         await transaction.RollbackAsync();
-                        return false;
-                    }
-                }
 
+                    }
+                    return response;
+                 
+                }
+                catch (Exception ex)
+                {
+                    response.Status = false;
+                    response.Message = ex.Message;
+                    await transaction.RollbackAsync();
+                    return response;
+                }
             }
 
-        
+        }
+
+
 
         public async Task<string> Login(LoginModel model)
         {
