@@ -5,6 +5,7 @@ using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
 using LMS.Security;
+using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,12 +23,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddAuthentication(option =>
+builder.Services
+    .AddAuthentication(option =>
 {
     option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(option =>
+})
+    .AddGoogle(options =>
+    {
+        options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
+        options.ClientSecret = "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";
+        
+    })
+    .AddJwtBearer(option =>
 {
     option.SaveToken = true;
     option.RequireHttpsMetadata = false;
@@ -80,6 +89,7 @@ builder.Services.AddTransient<ITransaction, TransactionRepository>();
 builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
 builder.Services.AddTransient<ICommon, CommonRepository>();
+builder.Services.AddTransient<IUtility, Utilities>();
 
 var app = builder.Build();
 app.Logger.LogInformation("Initialize the app");

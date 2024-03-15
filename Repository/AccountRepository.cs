@@ -1,9 +1,12 @@
-﻿using LMS.Data;
+﻿using Google.Apis.Auth;
+using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
+using LMS.Utility;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,12 +18,14 @@ namespace LMS.Repository
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
+        private readonly IUtility _utility;
         private readonly ApplicationDbContext _context;
-        public AccountRepository(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration)
+        public AccountRepository(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration,IUtility utility)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
+            _utility = utility;
             _context = context;
         }
 
@@ -38,23 +43,30 @@ namespace LMS.Repository
                         UserName = model.Email,
                         Email = model.Email,
                     };
-                    var createUser = await _userManager.CreateAsync(newUser, model.Password);
-                    var addToRole = await _userManager.AddToRoleAsync(newUser, model.Role);
-                    if (createUser.Succeeded && addToRole.Succeeded)
+                    var check=await _userManager.FindByEmailAsync(newUser.Email);
+                    if (check==null )
                     {
-                        response.Status = true;
-                        response.Message = "Successfully Created !";
-                        await transaction.CommitAsync();
-                       
-                    }
-                    else
-                    {
-                        response.Status = false;
-                        response.Data = createUser.Errors.Select(x => x.Description).Concat(  addToRole.Errors.Select(x=>x.Description)) ;
-                        response.Message = "Error in creating new user !" ;
-                        await transaction.RollbackAsync();
+                        var createUser = await _userManager.CreateAsync(newUser, model.Password);
+                        var addToRole = await _userManager.AddToRoleAsync(newUser, model.Role);
+                        if (createUser.Succeeded && addToRole.Succeeded)
+                        {
+                            response.Status = true;
+                            response.Message = "Successfully Created !";
+                            await transaction.CommitAsync();
+
+                        }
+                        else
+                        {
+                            response.Status = false;
+                            response.Data = createUser.Errors.Select(x => x.Description).Concat(addToRole.Errors.Select(x => x.Description));
+                            response.Message = "Error in creating new user !";
+                            await transaction.RollbackAsync();
+
+                        }
 
                     }
+
+                 
                     return response;
                  
                 }
@@ -71,32 +83,96 @@ namespace LMS.Repository
 
 
 
-        public async Task<string> Login(LoginModel model)
+        public async Task<ApiResponse> Login(LoginModel model)
         {
             var user = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-            if (!user.Succeeded)
+            if (user.Succeeded)
             {
-                return "Login Failure! Please try again!";
+                var userCheck = await _userManager.FindByEmailAsync(model.Email);
+                if (userCheck != null)
+                {
+                    var userRoles = await _userManager.GetRolesAsync(userCheck);
+                    var role = userRoles.FirstOrDefault() ?? " ";
+                    var authClaims = await _utility.GetUserClaims(userCheck);
+                    var response = new ApiResponse()
+                    {
+                        Status = true,
+                        Message = "Login Success !",
+                        Data = new LoginResponse
+                        {
+                            Name = userCheck.FirstName + " " + userCheck.LastName,
+                            Role = role,
+                            Token = _utility.GenerateJWTToken(authClaims),
+                            NotBefore = DateTime.UtcNow,
+                            Expiration = DateTime.UtcNow.AddDays(1),
+                        }
+                    };
+                    return response;
+
+
+
+                }
             }
-
-            var authClaims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, model.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var authLoginKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JWT:ValidIssuer"],
-                audience: _configuration["JWT:ValidAudience"],
-                expires: DateTime.Now.AddDays(1),
-                claims: authClaims,
-                signingCredentials: new SigningCredentials(authLoginKey, SecurityAlgorithms.HmacSha256)
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new ApiResponse() { Status = false };
         }
 
+        public async Task<ApiResponse> GoogleLogin(string crediantialToken)
+        {
+            var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
+            var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
+
+            if(userCheck != null && Googleresponse.EmailVerified)
+            {
+                var authClaims = await _utility.GetUserClaims(userCheck);
+                var userRoles = await _userManager.GetRolesAsync(userCheck);
+                var role = userRoles.FirstOrDefault() ?? " ";
+                var response = new ApiResponse()
+                {
+                    Status = true,
+                    Message = "Login Success !",
+                    Data = new LoginResponse
+                    {
+                        Name = userCheck.FirstName + " " + userCheck.LastName,
+                        Role = role,
+                        Token = _utility.GenerateJWTToken(authClaims),
+                        NotBefore = DateTime.UtcNow,
+                        Expiration = DateTime.UtcNow.AddDays(1),
+                    }
+                };
+                return response;
+            }
+
+            return new ApiResponse() { Status=false,Message="Google Verification Failed !"};
+
+        }
+
+        public async Task<ApiResponse> GoogleSignUp(string crediantialToken)
+        {
+            var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
+            var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
+
+            if (userCheck == null && Googleresponse.EmailVerified)
+            {
+
+                var newuser = new ApplicationUser()
+                {
+                    FirstName = Googleresponse.GivenName,
+                    LastName = Googleresponse.FamilyName,
+                    Email = Googleresponse.Email,
+                    UserName=Googleresponse.Email,
+                    Active = true,
+                };
+                var createUser = await _userManager.CreateAsync(newuser);
+
+                if(createUser.Succeeded)
+                {
+                    return new ApiResponse() { Status = true, Message = "User Created Successfully" };
+                }
+             
+            }
+
+            return new ApiResponse() { Status = false, Message = "Google Signup Failed !" };
+
+        }
     }
 }

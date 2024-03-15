@@ -1,11 +1,11 @@
-﻿using LMS.Interface;
+﻿using Google.Apis.Auth;
+using LMS.Interface;
 using LMS.Models;
+using LMS.Utility;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using System.Diagnostics.CodeAnalysis;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -16,16 +16,10 @@ namespace LMS.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IAccount _account;
-        private readonly IConfiguration _configuration;
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
-
-        public AuthenticateController(IAccount account, UserManager<ApplicationUser> userManager, IConfiguration configuration, SignInManager<ApplicationUser> signInManager)
+        public AuthenticateController(IAccount account)
         {
             _account = account;
-            _userManager = userManager;
-            _configuration = configuration;
-            _signInManager = signInManager;
+
         }
         [HttpPost]
         [Route("api/SignUp")]
@@ -41,50 +35,25 @@ namespace LMS.Controllers
         [Route("api/Login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-            if (user.Succeeded)
-            {
-                var userCheck = await _userManager.FindByEmailAsync(model.Email);
-                if (userCheck != null)
-                {
-                    var userRoles = await _userManager.GetRolesAsync(userCheck);
-                    var role = userRoles.FirstOrDefault()??" ";
-                    var authClaims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Role, role),
-                        new Claim(ClaimTypes.Name,userCheck.FirstName+ userCheck.LastName),
-                        new Claim(ClaimTypes.NameIdentifier,userCheck.Id),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
-                    };
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["JWT:ValidIssuer"],
-                        audience: _configuration["JWT:ValidAudience"],
-                        claims: authClaims,
-                        notBefore: DateTime.UtcNow,
-                        expires: DateTime.UtcNow.AddDays(1),
-                        signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:IssuerSigningKey"])), SecurityAlgorithms.HmacSha256)
-                        );
-                    var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-                    var response = new ApiResponse()
-                    {
-                        Status = true,
-                        Message = "Login Success !",
-                        Data = new LoginResponse
-                        {
-                            Name = userCheck.FirstName + " " + userCheck.LastName,
-                            Role = role,
-                            Token = jwtToken,
-                            NotBefore = token.ValidFrom,
-                            Expiration = token.ValidTo,
-                        }
-                    };
-                    return Ok(response);
+            return Ok(await _account.Login(model));
+        }
 
 
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("api/GoogleLogin")]
+        public async Task<IActionResult> LoginFromGoogle(string token)
+        {
+            return Ok(await _account.GoogleLogin(token));
 
-                }
-            }
-            return Ok(new ApiResponse() { Status = false, Message = "Sorry ! Invalid credential.. " });
+        }
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("api/GoogleSignup")]
+        public async Task<IActionResult> SignUpFromGoogle(string token)
+        {
+            return Ok(await _account.GoogleSignUp(token));
+
         }
 
     }
