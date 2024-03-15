@@ -20,7 +20,7 @@ namespace LMS.Repository
         private readonly IConfiguration _configuration;
         private readonly IUtility _utility;
         private readonly ApplicationDbContext _context;
-        public AccountRepository(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration,IUtility utility)
+        public AccountRepository(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager, IConfiguration configuration, IUtility utility)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -43,8 +43,8 @@ namespace LMS.Repository
                         UserName = model.Email,
                         Email = model.Email,
                     };
-                    var check=await _userManager.FindByEmailAsync(newUser.Email);
-                    if (check==null )
+                    var check = await _userManager.FindByEmailAsync(newUser.Email);
+                    if (check == null)
                     {
                         var createUser = await _userManager.CreateAsync(newUser, model.Password);
                         var addToRole = await _userManager.AddToRoleAsync(newUser, model.Role);
@@ -66,9 +66,9 @@ namespace LMS.Repository
 
                     }
 
-                 
+
                     return response;
-                 
+
                 }
                 catch (Exception ex)
                 {
@@ -118,60 +118,88 @@ namespace LMS.Repository
 
         public async Task<ApiResponse> GoogleLogin(string crediantialToken)
         {
-            var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
-            var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
-
-            if(userCheck != null && Googleresponse.EmailVerified)
+            var responsemodel = new ApiResponse();
+            try
             {
-                var authClaims = await _utility.GetUserClaims(userCheck);
-                var userRoles = await _userManager.GetRolesAsync(userCheck);
-                var role = userRoles.FirstOrDefault() ?? " ";
-                var response = new ApiResponse()
+                var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
+                var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
+
+                if (userCheck != null && Googleresponse.EmailVerified)
                 {
-                    Status = true,
-                    Message = "Login Success !",
-                    Data = new LoginResponse
+                    var authClaims = await _utility.GetUserClaims(userCheck);
+                    var userRoles = await _userManager.GetRolesAsync(userCheck);
+                    var role = userRoles.FirstOrDefault() ?? " ";
+                    responsemodel = new ApiResponse()
                     {
-                        Name = userCheck.FirstName + " " + userCheck.LastName,
-                        Role = role,
-                        Token = _utility.GenerateJWTToken(authClaims),
-                        NotBefore = DateTime.UtcNow,
-                        Expiration = DateTime.UtcNow.AddDays(1),
-                    }
-                };
-                return response;
+                        Status = true,
+                        Message = "Login Success !",
+                        Data = new LoginResponse
+                        {
+                            Name = userCheck.FirstName + " " + userCheck.LastName,
+                            Role = role,
+                            Token = _utility.GenerateJWTToken(authClaims),
+                            NotBefore = DateTime.UtcNow,
+                            Expiration = DateTime.UtcNow.AddDays(1),
+                        }
+                    };
+                }
+                else
+                {
+                    responsemodel.Status = false;
+                    responsemodel.Message = "User not found ! T_T";
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                return responsemodel = new ApiResponse() { Status = false, Message = $"Google Verification Failed ! , Error Message: {ex.Message} " };
             }
 
-            return new ApiResponse() { Status=false,Message="Google Verification Failed !"};
+            return responsemodel;
+
 
         }
 
         public async Task<ApiResponse> GoogleSignUp(string crediantialToken)
         {
-            var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
-            var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
+            var responsemodel = new ApiResponse();
 
-            if (userCheck == null && Googleresponse.EmailVerified)
+            try
             {
+                var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
+                var userCheck = await _userManager.FindByEmailAsync(Googleresponse.Email);
 
-                var newuser = new ApplicationUser()
+                if (userCheck == null && Googleresponse.EmailVerified)
                 {
-                    FirstName = Googleresponse.GivenName,
-                    LastName = Googleresponse.FamilyName,
-                    Email = Googleresponse.Email,
-                    UserName=Googleresponse.Email,
-                    Active = true,
-                };
-                var createUser = await _userManager.CreateAsync(newuser);
 
-                if(createUser.Succeeded)
-                {
-                    return new ApiResponse() { Status = true, Message = "User Created Successfully" };
+                    var newuser = new ApplicationUser()
+                    {
+                        FirstName = Googleresponse.GivenName,
+                        LastName = Googleresponse.FamilyName,
+                        Email = Googleresponse.Email,
+                        UserName = Googleresponse.Email,
+                        Active = true,
+                    };
+                    var createUser = await _userManager.CreateAsync(newuser);
+
+                    responsemodel.Status = createUser.Succeeded;
+                    responsemodel.Message = createUser.Succeeded ? "Success in creating user  :D" : "Error in creating User T_T";
                 }
-             
+                else
+                {
+                    responsemodel.Status = false;
+                    responsemodel.Message = "User exists already ! :D";
+                }
+            }
+            catch (Exception ex)
+            {
+                responsemodel.Status = false;
+                responsemodel.Message = $"Error Occured  ! ,  Error Message :{ex.Message}";
             }
 
-            return new ApiResponse() { Status = false, Message = "Google Signup Failed !" };
+
+            return responsemodel;
 
         }
     }
