@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]/[action]")]
+    [Route("api/admin/transaction")]
     [ApiController]
     [Authorize]
     public class TransactionController : ControllerBase
@@ -23,31 +23,31 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "TransactionList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetTransactionById(int id)
+        [HttpGet("{transactionId}")]
+        public async Task<IActionResult> GetTransactionById(int transactionId)
         {
-            var data = await _Transaction.GetTransactionById(id);
+            var data = await _Transaction.GetTransactionById(transactionId);
             return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Transaction fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateTransaction(TransactionModel model)
+        public async Task<IActionResult> CreateTransaction([FromBody]TransactionModel model)
         {
             var data = await _Transaction.InsertUpdateTransaction(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Transaction" : "Not Created Try Again", Data = data });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditTransaction(TransactionModel model)
+        [HttpPut("{transactionId}")]
+        public async Task<IActionResult> EditTransaction(int transactionId,[FromBody] TransactionModel model)
         {
             var data = await _Transaction.InsertUpdateTransaction(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Transaction" : "Not Updated Try Again", Data = data });
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteTransaction(int id)
+        [HttpDelete("{transactionId}")]
+        public async Task<IActionResult> DeleteTransaction(int transactionId)
         {
-            var data = await _Transaction.DeleteTransaction(id);
+            var data = await _Transaction.DeleteTransaction(transactionId);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Transaction" : "Not Deleted Try Again", Data = data });
         }
     }

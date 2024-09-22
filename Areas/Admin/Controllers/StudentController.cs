@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]/[action]")]
+    [Route("api/admin/student")]
     [ApiController]
     [Authorize]
     public class StudentController : ControllerBase
@@ -23,31 +23,31 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "StudentList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetStudentById(int id)
+        [HttpGet("{studentId}")]
+        public async Task<IActionResult> GetStudentById(int studentId)
         {
-            var data = await _Student.GetStudentById(id);
+            var data = await _Student.GetStudentById(studentId);
             return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Student fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStudent(StudentModel model)
+        public async Task<IActionResult> CreateStudent([FromBody]StudentModel model)
         {
             var data = await _Student.InsertUpdateStudent(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Student" : "Not Created Try Again", Data = data });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditStudent(StudentModel model)
+        [HttpPut("{studentId}")]
+        public async Task<IActionResult> EditStudent(int studentId,[FromBody] StudentModel model)
         {
             var data = await _Student.InsertUpdateStudent(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Student" : "Not Updated Try Again", Data = data });
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteStudent(int id)
+        [HttpDelete("{studentId}")]
+        public async Task<IActionResult> DeleteStudent(int studentId)
         {
-            var data = await _Student.DeleteStudent(id);
+            var data = await _Student.DeleteStudent(studentId);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Student" : "Not Deleted Try Again", Data = data });
         }
 

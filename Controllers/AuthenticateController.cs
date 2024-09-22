@@ -19,10 +19,9 @@ namespace LMS.Controllers
         public AuthenticateController(IAccount account)
         {
             _account = account;
-
         }
         [HttpPost]
-        [Route("api/SignUp")]
+        [Route("api/signUp")]
         [AllowAnonymous]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
         {
@@ -32,7 +31,7 @@ namespace LMS.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("api/Login")]
+        [Route("api/login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             return Ok(await _account.Login(model));
@@ -41,7 +40,7 @@ namespace LMS.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("api/GoogleLogin")]
+        [Route("api/googleLogin")]
         public async Task<IActionResult> LoginFromGoogle(string token)
         {
             return Ok(await _account.GoogleLogin(token));
@@ -49,7 +48,7 @@ namespace LMS.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        [Route("api/GoogleSignup")]
+        [Route("api/googleSignup")]
         public async Task<IActionResult> SignUpFromGoogle(string token)
         {
             return Ok(await _account.GoogleSignUp(token));

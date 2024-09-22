@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]/[action]")]
+    [Route("api/admin/book")]
     [ApiController]
     [Authorize]
     public class BookController : ControllerBase
@@ -23,10 +23,10 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "BookList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetBookById(int id)
+        [HttpGet("{bookId}")]
+        public async Task<IActionResult> GetBookById(int bookId)
         {
-            var data = await _Book.GetBookById(id);
+            var data = await _Book.GetBookById(bookId);
             return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Book fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
@@ -37,17 +37,17 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Book" : "Not Created Try Again", Data = data });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditBook(BookModel model)
+        [HttpPut("{bookId}")]
+        public async Task<IActionResult> EditBook(int bookId, [FromBody]BookModel model)
         {
             var data = await _Book.InsertUpdateBook(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Book" : "Not Updated Try Again", Data = data });
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteBook(int id)
+        [HttpDelete("{bookId}")]
+        public async Task<IActionResult> DeleteBook(int bookId)
         {
-            var data = await _Book.DeleteBook(id);
+            var data = await _Book.DeleteBook(bookId);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Book" : "Not Deleted Try Again", Data = data });
         }
 

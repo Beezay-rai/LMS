@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]/[action]")]
+    [Route("api/admin/category")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategory _Category;
@@ -23,10 +23,10 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "CategoryList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCategoryById(int id)
+        [HttpGet("{categoryId}")]
+        public async Task<IActionResult> GetCategoryById(int categoryId)
         {
-            var data = await _Category.GetCategoryById(id);
+            var data = await _Category.GetCategoryById(categoryId);
             return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Category fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
@@ -37,8 +37,8 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Category" : "Not Created Try Again", Data = data });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditCategory(CategoryModel model)
+        [HttpPut("{categoryId}")]
+        public async Task<IActionResult> EditCategory(int categoryId,[FromBody]CategoryModel model)
         {
             var data = await _Category.InsertUpdateCategory(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Category" : "Not Updated Try Again", Data = data });

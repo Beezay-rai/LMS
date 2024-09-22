@@ -24,7 +24,7 @@ namespace LMS.Areas.Admin.Repository
             return await _context.Category.Where(x=>x.IsDeleted==false).Select(x => new CategoryModel()
             {
                 Id = x.Id,
-                CategoryName = x.Name,
+                Name = x.Name,
             }).ToListAsync();
         }
         public async Task<CategoryModel> GetCategoryById(int id)
@@ -32,7 +32,7 @@ namespace LMS.Areas.Admin.Repository
             return await _context.Category.Where(x => x.Id == id && x.IsDeleted == false ).Select(x => new CategoryModel()
             {
                 Id = x.Id,
-                CategoryName = x.Name,
+                Name = x.Name,
                 
             }).FirstOrDefaultAsync();
         }
@@ -45,7 +45,7 @@ namespace LMS.Areas.Admin.Repository
                     var Category = await _context.Category.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsDeleted == false);
                     if (Category != null)
                     {
-                        Category.Name = model.CategoryName;
+                        Category.Name = model.Name;
 
                         _context.Entry(Category).State = EntityState.Modified;
                     }
@@ -54,7 +54,7 @@ namespace LMS.Areas.Admin.Repository
                 {
                     Category Category = new Category()
                     {
-                        Name = model.CategoryName,
+                        Name = model.Name,
 
                     };
                     await _context.Category.AddAsync(Category);

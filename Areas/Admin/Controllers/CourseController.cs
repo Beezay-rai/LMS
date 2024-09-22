@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/Admin/[controller]/[action]")]
+    [Route("api/admin/course")]
     [ApiController]
     [Authorize]
     public class CourseController : ControllerBase
@@ -23,31 +23,31 @@ namespace LMS.Areas.Admin.Controllers
             return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "CourseList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetCourseById(int id)
+        [HttpGet("{courseId}")]
+        public async Task<IActionResult> GetCourseById(int courseId)
         {
-            var data = await _Course.GetCourseById(id);
+            var data = await _Course.GetCourseById(courseId);
             return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Course fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCourse(CourseModel model)
+        public async Task<IActionResult> CreateCourse([FromBody] CourseModel model)
         {
             var data = await _Course.InsertUpdateCourse(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Course" : "Not Created Try Again", Data = data });
         }
 
-        [HttpPut]
-        public async Task<IActionResult> EditCourse(CourseModel model)
+        [HttpPut("{courseId}")]
+        public async Task<IActionResult> EditCourse(int courseId,[FromBody] CourseModel model)
         {
             var data = await _Course.InsertUpdateCourse(model);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Course" : "Not Updated Try Again", Data = data });
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteCourse(int id)
+        [HttpDelete("{courseId}")]
+        public async Task<IActionResult> DeleteCourse(int courseId)
         {
-            var data = await _Course.DeleteCourse(id);
+            var data = await _Course.DeleteCourse(courseId);
             return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Course" : "Not Deleted Try Again", Data = data });
         }
 

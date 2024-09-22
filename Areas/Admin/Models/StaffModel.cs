@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Areas.Admin.Models
 {
-    public class StaffViewModel
+    public class StaffModel
     {
         public int Id { get; set; }
         [Required]

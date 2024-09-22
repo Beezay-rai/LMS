@@ -45,6 +45,8 @@ namespace LMS.Models
         public string Message { get; set; } = string.Empty;
         public object Data { get; set; } = new object();
     }
+
+
     public class LoginResponse
     {
         public string Name { get; set; }

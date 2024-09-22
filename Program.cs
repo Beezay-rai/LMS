@@ -18,8 +18,10 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -34,7 +36,7 @@ builder.Services
     {
         options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
         options.ClientSecret = "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";
-        
+
     })
     .AddJwtBearer(option =>
 {
@@ -52,7 +54,7 @@ builder.Services
     };
 });
 
-builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -88,7 +90,6 @@ builder.Services.AddTransient<ICourse, CourseRepository>();
 builder.Services.AddTransient<ITransaction, TransactionRepository>();
 builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
-builder.Services.AddTransient<ICommon, CommonRepository>();
 builder.Services.AddTransient<IUtility, Utilities>();
 
 var app = builder.Build();
@@ -101,9 +102,7 @@ using (var scope = app.Services.CreateScope())
     AddRequiredData(scope.ServiceProvider);
 }
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
@@ -112,8 +111,8 @@ app.UseCors(options => options
 .AllowAnyHeader()
 .AllowAnyMethod()
 );
-//}
-app.UseHttpsRedirection();
+
+
 
 app.UseAuthentication();
 

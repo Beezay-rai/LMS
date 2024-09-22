@@ -20,9 +20,9 @@ namespace LMS.Areas.Admin.Repository
         }
 
         #region Staff
-        public async Task<List<StaffViewModel>> GetAllStaff()
+        public async Task<List<StaffModel>> GetAllStaff()
         {
-            return await _context.Staff.Where(x=>x.Deleted==false).Select(x => new StaffViewModel()
+            return await _context.Staff.Where(x=>x.Deleted==false).Select(x => new StaffModel()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
@@ -33,9 +33,9 @@ namespace LMS.Areas.Admin.Repository
             }).ToListAsync();
         }
 
-        public async Task<StaffViewModel> GetStaffById(int id)
+        public async Task<StaffModel> GetStaffById(int id)
         {
-            return await _context.Staff.Where(x => x.Id == id && x.Deleted==false).Select(x => new StaffViewModel()
+            return await _context.Staff.Where(x => x.Id == id && x.Deleted==false).Select(x => new StaffModel()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
@@ -43,9 +43,9 @@ namespace LMS.Areas.Admin.Repository
                 BirthDate = x.BirthDate,
                 Contact = x.Contact,
                 EmailAddress = x.EmailAddress
-            }).FirstOrDefaultAsync() ?? new StaffViewModel();
+            }).FirstOrDefaultAsync() ?? new StaffModel();
         }
-        public async Task<bool> InsertUpdateStaff(StaffViewModel model)
+        public async Task<bool> InsertUpdateStaff(StaffModel model)
         {
             try
             {
