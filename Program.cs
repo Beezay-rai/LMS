@@ -4,7 +4,7 @@ using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
-using LMS.Security;
+
 using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,24 +26,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-builder.Services
-    .AddAuthentication(option =>
-{
-    option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    option.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-    .AddGoogle(options =>
-    {
-        options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
-        options.ClientSecret = "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";
 
-    })
-    .AddJwtBearer(option =>
+
+builder.Services.AddAuthentication(options =>
 {
-    option.SaveToken = true;
-    option.RequireHttpsMetadata = false;
-    option.TokenValidationParameters = new TokenValidationParameters()
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddGoogle(options =>
+{
+    options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
+    options.ClientSecret = "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";
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
@@ -52,7 +53,26 @@ builder.Services
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:IssuerSigningKey"])),
         ValidateIssuerSigningKey = true
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = context =>
+        {
+            context.HandleResponse(); // Suppress the default unauthorized response
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+
+            var result = JsonSerializer.Serialize(new
+            {
+                status = false,
+                message = "You are not authorized to access this resource."
+            });
+
+            return context.Response.WriteAsync(result);
+        }
+    };
 });
+
 
 
 builder.Services.AddSwaggerGen(options =>
@@ -92,15 +112,15 @@ builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
 builder.Services.AddTransient<IUtility, Utilities>();
 
-var app = builder.Build();
-app.Logger.LogInformation("Initialize the app");
 
-//Roles and Users
-using (var scope = app.Services.CreateScope())
-{
-    CreateRolesAndAdministrator(scope.ServiceProvider);
-    AddRequiredData(scope.ServiceProvider);
-}
+
+var app = builder.Build();
+SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(),app.Services);
+
+
+app.Logger.LogInformation("LMS App Running !");
+
+
 
 
 app.UseSwagger();
@@ -129,10 +149,10 @@ void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
 {
     var roleNames = new List<string>()
     {
-        UserRoles.Administrator,
-        UserRoles.SuperAdmin,
-        UserRoles.Admin,
-        UserRoles.User
+        "Administrator",
+        "SuperAdmin",
+        "Admin",
+        "User"
     };
 
     //Creating roles
@@ -150,7 +170,7 @@ void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
         EmailConfirmed = true,
         LockoutEnabled = false,
         Active = true,
-    }, administratorPwd, UserRoles.Administrator);
+    }, administratorPwd, "Administrator");
 
 
 
@@ -192,39 +212,3 @@ void AddUserToRole(IServiceProvider serviceProvider, ApplicationUser user, strin
 }
 #endregion
 
-
-#region Required Data For Lms
-void AddRequiredData(IServiceProvider serviceProvider)
-{
-    using var context = serviceProvider.GetRequiredService<ApplicationDbContext>();
-
-    #region Gender
-    var listOfGender = new List<Gender>
-    {
-       new Gender(){Id = 1,Name="Male"},
-       new Gender(){Id = 2,Name="Female"}
-    };
-    using (var transaction = context.Database.BeginTransaction())
-    {
-        try
-        {
-            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Gender] On");
-            foreach (var gender in listOfGender)
-            {
-                if (context.Gender.Any(x => x.Id == gender.Id)) continue;
-                context.Gender.Add(gender);
-                context.SaveChanges();
-            }
-            context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT [dbo].[Gender] Off");
-            transaction.Commit();
-        }
-        catch
-        {
-            transaction.Rollback();
-        }
-
-    }
-    #endregion
-}
-
-#endregion

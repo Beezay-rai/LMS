@@ -18,7 +18,6 @@ namespace LMS.Data
         public DbSet<BookTransaction> BookTransaction { get; set; }
         public DbSet<BookCategoryDetail> BookCategoryDetail { get; set; }
         public DbSet<Course> Course { get; set; }
-        public DbSet<Gender> Gender { get; set; }
 
     }
 }

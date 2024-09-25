@@ -26,8 +26,6 @@ namespace LMS.Areas.Admin.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
-                GenderId = x.GenderId,
-                GenderName = _context.Gender.Where(z=>z.Id == x.GenderId).Select(z => z.Name).FirstOrDefault(),
                 CourseId =x.CourseId,
                 CourseName = _context.Course.Where(z=>z.Id==x.CourseId).Select(x=>x.CourseName).FirstOrDefault(),
                 EmailAddress=x.EmailAddress,
@@ -42,8 +40,6 @@ namespace LMS.Areas.Admin.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
-                GenderId = x.GenderId,
-                GenderName = _context.Gender.Where(z => z.Id == x.GenderId).Select(z => z.Name).FirstOrDefault(),
                 CourseId = x.CourseId,
                 CourseName = _context.Course.Where(z => z.Id == x.CourseId).Select(x => x.CourseName).FirstOrDefault(),
                 EmailAddress = x.EmailAddress,
@@ -63,7 +59,6 @@ namespace LMS.Areas.Admin.Repository
                         student.FirstName = model.FirstName;
                         student.LastName = model.LastName;
                         student.BirthDate = model.BirthDate;
-                        student.GenderId = model.GenderId;
                         student.CourseId = model.CourseId;
                         student.EmailAddress = model.EmailAddress;
                         student.PhoneNumber = model.PhoneNumber;
@@ -82,7 +77,6 @@ namespace LMS.Areas.Admin.Repository
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        GenderId = model.GenderId,
                         EmailAddress=model.EmailAddress,
                         CourseId=model.CourseId,
                         PhoneNumber=model.PhoneNumber,
