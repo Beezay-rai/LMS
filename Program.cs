@@ -9,8 +9,10 @@ using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using System.Text.Json;
 
@@ -114,11 +116,18 @@ builder.Services.AddTransient<IUtility, Utilities>();
 
 
 
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+builder.Logging.AddSerilog(logger);
+
+
 var app = builder.Build();
-SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(),app.Services);
+
+SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(), app.Services);
 
 
-app.Logger.LogInformation("LMS App Running !");
+logger.Information("LMS App Running !");
 
 
 
@@ -131,8 +140,6 @@ app.UseCors(options => options
 .AllowAnyHeader()
 .AllowAnyMethod()
 );
-
-
 
 app.UseAuthentication();
 
