@@ -4,7 +4,6 @@ using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
-
 using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -30,6 +29,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 
+#region Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,6 +74,7 @@ builder.Services.AddAuthentication(options =>
         }
     };
 });
+#endregion
 
 
 
@@ -114,12 +115,25 @@ builder.Services.AddTransient<ICategory, CategoryRepository>();
 builder.Services.AddTransient<IDashboard, DashboardRepository>();
 builder.Services.AddTransient<IUtility, Utilities>();
 
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("LmsReact", policy =>
+    {
+        policy.WithOrigins(new string[] { "https://our-library.vercel.app", "http://localhost:3000" })
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+    });
+});
 
+
+#region Logging
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
+builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+#endregion
 
 
 var app = builder.Build();
@@ -135,11 +149,9 @@ logger.Information("LMS App Running !");
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
-app.UseCors(options => options
-.AllowAnyOrigin()
-.AllowAnyHeader()
-.AllowAnyMethod()
-);
+
+
+app.UseCors("LmsReact");
 
 app.UseAuthentication();
 

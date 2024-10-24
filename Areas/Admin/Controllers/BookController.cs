@@ -8,7 +8,7 @@ namespace LMS.Areas.Admin.Controllers
 {
     [Route("api/admin/book")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class BookController : ControllerBase
     {
         private readonly IBook _Book;

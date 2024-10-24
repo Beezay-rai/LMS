@@ -85,14 +85,15 @@ namespace LMS.Repository
 
         public async Task<ApiResponse> Login(LoginModel model)
         {
-            var user = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            var user = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
             if (user.Succeeded)
             {
-                var userCheck = await _userManager.FindByEmailAsync(model.Email);
+                
+                var userCheck = await _userManager.FindByNameAsync(model.Username);
                 if (userCheck != null)
                 {
                     var userRoles = await _userManager.GetRolesAsync(userCheck);
-                    var role = userRoles.FirstOrDefault() ?? " ";
+                    var role = userRoles.FirstOrDefault() ?? "";
                     var authClaims = await _utility.GetUserClaims(userCheck);
                     var response = new ApiResponse()
                     {
