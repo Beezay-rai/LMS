@@ -1,11 +1,11 @@
-﻿namespace LMS.Areas.Admin.Models
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace LMS.Areas.Admin.Models
 {
-    public class POSTCategoryModel
-    {
-        public string Name { get; set; }
-    }
+  
     public class CategoryModel
     {
+        [SwaggerIgnore]
         public int Id { get; set; }
         public string Name { get; set; }
     }

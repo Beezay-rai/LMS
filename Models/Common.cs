@@ -1,17 +1,26 @@
-﻿namespace LMS.Models
+﻿using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
+
+namespace LMS.Models
 {
-    public class ApiResponseModel
+    public class BaseApiResponseModel
     {
-        public bool Status { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public object Data { get; set; } = new object();
+        [SwaggerIgnore]
+        public HttpStatusCode HttpStatusCode { get; set; }
+        public bool Status { get;set; }
+        public string Message { get; set; }
     }
 
-    public class CommonResponseModel<T>
+
+    public class ApiResponseModel<T> : BaseApiResponseModel
     {
-        public bool Status { get; set; }
-        public int HttpStatusCode { get; set; }
-        public string Message { get; set; }
         public T Data { get; set; }
     }
+
+    public class ApiErrorResponseModel<T> : BaseApiResponseModel
+    {
+        public List<T> Errors { get; set; } = new List<T>();
+    }
+
+ 
 }

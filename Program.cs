@@ -118,9 +118,9 @@ builder.Services.AddSwaggerGen(options =>
 //Register Here
 builder.Services.AddScoped<IAccount, AccountRepository>();
 builder.Services.AddScoped<IBook, BookRepository>();
-builder.Services.AddScoped<IStudent, StudentRepository>();
-builder.Services.AddScoped<ICourse, CourseRepository>();
-builder.Services.AddScoped<ITransaction, TransactionRepository>();
+//builder.Services.AddScoped<IStudent, StudentRepository>();
+//builder.Services.AddScoped<ICourse, CourseRepository>();
+//builder.Services.AddScoped<ITransaction, TransactionRepository>();
 builder.Services.AddScoped<ICategory, CategoryRepository>();
 builder.Services.AddScoped<IDashboard, DashboardRepository>();
 builder.Services.AddScoped<IUtility, Utilities>();

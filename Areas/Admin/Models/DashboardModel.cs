@@ -1,6 +1,6 @@
 ﻿namespace LMS.Areas.Admin.Models
 {
-    public class DashboardViewModel
+    public class DashboardModel
     {
         public int Id { get; set; }
         public int BookCount { get; set; }

@@ -9,10 +9,8 @@ namespace LMS.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IAccount _account;
-        private readonly ILogger<AuthenticateController> _logger;
-        public AuthenticateController(IAccount account, ILogger<AuthenticateController> logger)
+        public AuthenticateController(IAccount account)
         {
-            _logger = logger;
             _account = account;
         }
         [HttpPost]
@@ -29,7 +27,6 @@ namespace LMS.Controllers
         [Route("api/login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            //_logger.LogInformation("Model Provided : {Model}", model);
             return Ok(await _account.Login(model));
         }
 

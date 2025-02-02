@@ -20,7 +20,7 @@ namespace LMS.Areas.Admin.Controllers
         public async Task<IActionResult> GetDashboardData()
         {
             var data = await _dashboard.GetDashboardData();
-            return Ok(new ApiResponseModel() { Status = data != null, Message = data != null ? "Sucessfully fetched Data " : " Error in fetching data", Data = data });
+            return StatusCode((int)data.HttpStatusCode, data);
         }
     }
 }

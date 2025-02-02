@@ -1,14 +1,15 @@
 ﻿using LMS.Areas.Admin.Models;
+using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
     public interface ICourse
     {
 
-        Task<List<CourseModel>> GetAllCourse();
-        Task<CourseModel> GetCourseById(int id);
-        Task<bool> AddCourse(POSTCourseModel model);
-        Task<bool> UpdateCourse(int courseId, POSTCourseModel model);
-        Task<bool> DeleteCourse(int id);
+        Task<BaseApiResponseModel> GetAllCourse();
+        Task<BaseApiResponseModel> GetCourseById(int id);
+        Task<BaseApiResponseModel> AddCourse(CourseModel model);
+        Task<BaseApiResponseModel> UpdateCourse(int courseId, CourseModel model);
+        Task<BaseApiResponseModel> DeleteCourse(int id);
     }
 }

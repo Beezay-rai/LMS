@@ -4,9 +4,9 @@ namespace LMS.Interface
 {
     public interface IAccount
     {
-        Task<ApiResponseModel> SignUp(SignUpModel model);
-        Task<ApiResponseModel> Login(LoginModel model);
-        Task<ApiResponseModel> GoogleLogin(string crediantialToken);
-        Task<ApiResponseModel> GoogleSignUp(string crediantialToken);
+        Task<BaseApiResponseModel> SignUp(SignUpModel model);
+        Task<BaseApiResponseModel> Login(LoginModel model);
+        Task<BaseApiResponseModel> GoogleLogin(string crediantialToken);
+        Task<BaseApiResponseModel> GoogleSignUp(string crediantialToken);
     }
 }

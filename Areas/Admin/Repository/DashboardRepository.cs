@@ -1,6 +1,7 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
+using LMS.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
@@ -15,9 +16,10 @@ namespace LMS.Areas.Admin.Repository
             _context = context;
         }
 
-        public async Task<DashboardViewModel> GetDashboardData()
+        public async Task<BaseApiResponseModel> GetDashboardData()
         {
-            var data = new DashboardViewModel()
+            var response = new ApiErrorResponseModel<DashboardModel>();
+            var data = new DashboardModel()
             {
                 BookCount = await _context.Book.Where(x => x.Deleted == false).CountAsync(),
                 IssuedCount = await _context.Transaction.Where(x => x.Deleted == false).CountAsync(),
@@ -58,7 +60,7 @@ namespace LMS.Areas.Admin.Repository
                 data.UserActivityCountList.Add(count);
             }
 
-            return data;
+            return response;
         }
     }
 }

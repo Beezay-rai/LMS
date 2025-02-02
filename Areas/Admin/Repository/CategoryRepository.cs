@@ -1,7 +1,9 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
+using LMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
@@ -19,90 +21,179 @@ namespace LMS.Areas.Admin.Repository
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public async Task<List<CategoryModel>> GetAllCategory()
+        public async Task<BaseApiResponseModel> GetAllCategory()
         {
-            return await _context.Category.Where(x => x.IsDeleted == false).Select(x => new CategoryModel()
-            {
-                Id = x.Id,
-                Name = x.Name,
-            }).ToListAsync();
-        }
-        public async Task<CategoryModel> GetCategoryById(int id)
-        {
-            return await _context.Category.Where(x => x.Id == id && x.IsDeleted == false).Select(x => new CategoryModel()
-            {
-                Id = x.Id,
-                Name = x.Name,
-
-            }).FirstOrDefaultAsync();
-        }
-       
-        public async Task<bool> DeleteCategory(int id)
-        {
+            var response = new ApiResponseModel<List<CategoryModel>>();
             try
             {
-                var Category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id && x.IsDeleted == false);
-                if (Category != null)
+                var data = await _context.Category.Where(x => x.IsDeleted == false).Select(x => new CategoryModel()
                 {
-                    Category.IsDeleted = true;
-                    _context.Entry(Category).State = EntityState.Modified;
-
-                }
-                await _context.SaveChangesAsync();
-                return true;
-
+                    Id = x.Id,
+                    Name = x.Name,
+                }).ToListAsync();
+                response.Data = data;
+                response.Status = true;
+                response.Message = "Available Category List";
+                return response;
             }
             catch (Exception ex)
             {
-                return false;
-            }
-        }
+                var errorResponse = new ApiErrorResponseModel<object>();
+                errorResponse.Message = ex.Message;
+                errorResponse.Status = false;
+                errorResponse.HttpStatusCode = HttpStatusCode.InternalServerError;
+                return errorResponse;
 
-        public async Task<bool> AddCourse(POSTCategoryModel model)
+            }
+
+        }
+        public async Task<BaseApiResponseModel> GetCategoryById(int id)
         {
+            var response = new ApiResponseModel<CategoryModel>();
             try
             {
-                Category Category = new Category()
-                {
-                    Name = model.Name,
-
-                };
-                await _context.Category.AddAsync(Category);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-           
-        }
-
-        public async Task<bool> UpdateCourse(int courseId, POSTCategoryModel model)
-        {
-            try
-            {
-                if (courseId > 0)
-                {
-                    var Category = await _context.Category.FirstOrDefaultAsync(x => x.Id == courseId && x.IsDeleted == false);
-                    if (Category != null)
+                var data = await _context.Category
+                    .Where(x => x.Id == id && !x.IsDeleted)
+                    .Select(x => new CategoryModel
                     {
-                        Category.Name = model.Name;
+                        Id = x.Id,
+                        Name = x.Name,
+                    })
+                    .FirstOrDefaultAsync();
 
-                        _context.Entry(Category).State = EntityState.Modified;
-                    }
-                    return true;
-                }
-                else
+                if (data == null)
                 {
-                    return false;
+                    return new ApiErrorResponseModel<CategoryModel>
+                    {
+                        Status = false,
+                        Message = "Category not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
                 }
+
+                response.Data = data;
+                response.Status = true;
+                response.Message = "Category details retrieved successfully";
+                response.HttpStatusCode = HttpStatusCode.OK;
+                return response;
             }
             catch (Exception ex)
             {
-                return false;
+                return new ApiErrorResponseModel<CategoryModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
             }
-            
         }
+
+        public async Task<BaseApiResponseModel> DeleteCategory(int id)
+        {
+            try
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+                if (category == null)
+                {
+                    return new ApiErrorResponseModel<bool>
+                    {
+                        Status = false,
+                        Message = "Category not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
+                }
+
+                category.IsDeleted = true;
+                _context.Entry(category).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseModel<bool>
+                {
+                    Status = true,
+                    Data = true,
+                    Message = "Category deleted successfully",
+                    HttpStatusCode = HttpStatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<bool>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<BaseApiResponseModel> AddCategory(CategoryModel model)
+        {
+            try
+            {
+                var category = new Category
+                {
+                    Name = model.Name
+                };
+
+                await _context.Category.AddAsync(category);
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseModel<bool>
+                {
+                    Status = true,
+                    Data = true,
+                    Message = "Category added successfully",
+                    HttpStatusCode = HttpStatusCode.Created
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<bool>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<BaseApiResponseModel> UpdateCategory(int categoryId, CategoryModel model)
+        {
+            try
+            {
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.IsDeleted);
+                if (category == null)
+                {
+                    return new ApiErrorResponseModel<bool>
+                    {
+                        Status = false,
+                        Message = "Category not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
+                }
+
+                category.Name = model.Name;
+                _context.Entry(category).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseModel<bool>
+                {
+                    Status = true,
+                    Data = true,
+                    Message = "Category updated successfully",
+                    HttpStatusCode = HttpStatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<bool>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
     }
 }

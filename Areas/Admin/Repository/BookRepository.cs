@@ -1,7 +1,9 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
+using LMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
@@ -21,9 +23,9 @@ namespace LMS.Areas.Admin.Repository
             _logger = logger;
         }
 
-        public async Task<List<BookModel>> GetAllBook()
+        public async Task<BaseApiResponseModel> GetAllBook()
         {
-            return await _context.Book.Where(x => x.Deleted == false).Select(x => new BookModel()
+            var data = await _context.Book.Where(x => x.Deleted == false).Select(x => new BookModel()
             {
                 Id = x.Id,
                 BookName = x.BookName,
@@ -39,10 +41,19 @@ namespace LMS.Areas.Admin.Repository
 
                 }).ToList()
             }).ToListAsync();
+            var response = new ApiResponseModel<List<BookModel>>()
+            {
+                HttpStatusCode=HttpStatusCode.OK,
+                Status = true,
+                Message = "Book List",
+                Data = data
+            };
+            return response;
         }
-        public async Task<BookModel> GetBookById(int id)
+        public async Task<BaseApiResponseModel> GetBookById(int id)
         {
-            return await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookModel()
+            var response = new ApiResponseModel<BookModel>();
+            var data =await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookModel()
             {
 
                 Id = x.Id,
@@ -59,6 +70,21 @@ namespace LMS.Areas.Admin.Repository
 
                 }).ToList()
             }).FirstOrDefaultAsync();
+            if(data != null)
+            {
+                response.HttpStatusCode = HttpStatusCode.OK;
+                response.Data = data;
+                response.Message = "Book with id : " + id;
+
+
+            }
+            else
+            {
+                response.HttpStatusCode = HttpStatusCode.NotFound;
+                response.Data = null;
+                response.Message = "Book Not Found with Id : " + id;
+            }
+            return response;
         }
         public async Task<bool> InsertUpdateBook(BookModel model)
         {
@@ -149,8 +175,9 @@ namespace LMS.Areas.Admin.Repository
 
 
 
-        public async Task<bool> AddBook(BookModel model)
+        public async Task<BaseApiResponseModel> AddBook(BookModel model)
         {
+            var response = new ApiResponseModel<BookModel>();
             try
             {
                 Book book = new Book()
@@ -166,17 +193,18 @@ namespace LMS.Areas.Admin.Repository
                 };
                 await _context.Book.AddAsync(book);
                 await _context.SaveChangesAsync();
-                return true;
+                return response;
             }
             catch
             {
-                return false;
+                return response;
             }
 
         }
 
-        public async Task<bool> UpdateBook(int BookId, BookModel model)
+        public async Task<BaseApiResponseModel> UpdateBook(int BookId, BookModel model)
         {
+            var response = new ApiResponseModel<BookModel>();
             try
             {
                 if (BookId > 0)
@@ -211,22 +239,23 @@ namespace LMS.Areas.Admin.Repository
 
 
                     }
-                    return true;
+                    return response;
                 }
                 else
                 {
-                    return false;
+                    return response;
                 }
             }
             catch (Exception ex)
             {
-                return false;
+                return response;
             }
 
         }
 
-        public async Task<bool> DeleteBook(int id)
+        public async Task<BaseApiResponseModel> DeleteBook(int id)
         {
+            var response = new ApiResponseModel<BookModel>();
             try
             {
                 var Book = await _context.Book.FindAsync(id);
@@ -237,17 +266,17 @@ namespace LMS.Areas.Admin.Repository
                     Book.DeletedDate = DateTime.UtcNow;
                     _context.Entry(Book).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
-                    return true;
+                    return response;
                 }
                 else
                 {
-                    return false;
+                    return response;
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogInformation($"Error , DateTime:{DateTime.UtcNow}, UserId:{_userId},Error Description:{ex} ");
-                return false;
+                return response;
             }
         }
 
