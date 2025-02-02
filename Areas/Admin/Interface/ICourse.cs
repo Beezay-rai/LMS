@@ -7,7 +7,8 @@ namespace LMS.Areas.Admin.Interface
 
         Task<List<CourseModel>> GetAllCourse();
         Task<CourseModel> GetCourseById(int id);
-        Task<bool> InsertUpdateCourse(CourseModel model);
+        Task<bool> AddCourse(POSTCourseModel model);
+        Task<bool> UpdateCourse(int courseId, POSTCourseModel model);
         Task<bool> DeleteCourse(int id);
     }
 }

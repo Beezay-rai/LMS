@@ -17,8 +17,8 @@ namespace LMS.Data
         public int Quantity { get; set; }
         [Required]
         [DataType(DataType.Date)]
-        public DateTime PublicationDate { get;set; }
-      
+        public DateTime PublicationDate { get; set; }
+
         public bool? Deleted { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }

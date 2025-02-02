@@ -25,20 +25,20 @@ namespace LMS.Areas.Admin.Repository
             {
                 Id = x.Id,
                 Remarks = x.Remarks,
-                IssuedDate =x.CreatedDate.Date,
-                BookTransactionList = _context.BookTransaction.Where(z=>z.TransactionId == x.Id).Select(z=>new BookTransactionGETModel()
+                IssuedDate = x.CreatedDate.Date,
+                BookTransactionList = _context.BookTransaction.Where(z => z.TransactionId == x.Id).Select(z => new BookTransactionGETModel()
                 {
-                    Id=z.Id,    
-                    TransactionId=z.TransactionId,  
-                    BookId=z.BookId,
-                    BookName=z.Book.BookName,
-                    StudentId=z.StudentId,
-                    StudentName = z.Student.FirstName + " " + z.Student.LastName,   
+                    Id = z.Id,
+                    TransactionId = z.TransactionId,
+                    BookId = z.BookId,
+                    BookName = z.Book.BookName,
+                    StudentId = z.StudentId,
+                    StudentName = z.Student.FirstName + " " + z.Student.LastName,
                     Status = z.Status,
-                    StatusName=z.Status.ToString(), 
+                    StatusName = z.Status.ToString(),
 
                 }).ToList(),
-                CreatedBy =_context.Users.Where(z=>z.Id == x.CreatedBy).Select(z=>(z.FirstName + " " +z.LastName)).FirstOrDefault()?? "Admin"
+                CreatedBy = _context.Users.Where(z => z.Id == x.CreatedBy).Select(z => (z.FirstName + " " + z.LastName)).FirstOrDefault() ?? "Admin"
 
 
             }).ToListAsync();
@@ -70,13 +70,13 @@ namespace LMS.Areas.Admin.Repository
         }
         public async Task<bool> InsertUpdateTransaction(TransactionModel model)
         {
-            using(var dbTransaction = _context.Database.BeginTransaction())
+            using (var dbTransaction = _context.Database.BeginTransaction())
             {
                 try
                 {
                     if (model.Id > 0)
                     {
-                        var Transaction = await _context.Transaction.Where(x=>x.Id == model.Id && x.Deleted == false).FirstOrDefaultAsync();
+                        var Transaction = await _context.Transaction.Where(x => x.Id == model.Id && x.Deleted == false).FirstOrDefaultAsync();
                         if (Transaction != null)
                         {
                             Transaction.Remarks = model.Remarks;
@@ -85,14 +85,14 @@ namespace LMS.Areas.Admin.Repository
                             _context.Entry(Transaction).State = EntityState.Modified;
                             if (model.BookTransactionList.Count > 0)
                             {
-                                foreach(var item in model.BookTransactionList)
+                                foreach (var item in model.BookTransactionList)
                                 {
                                     var bookTransaction = await _context.BookTransaction.Where(x => x.TransactionId == Transaction.Id && x.Id == item.Id).FirstOrDefaultAsync();
                                     if (bookTransaction != null)
                                     {
                                         bookTransaction.ReturnDate = item.ReturnDate;
                                         bookTransaction.BookId = item.BookId;
-                                        bookTransaction.Status=item.Status;
+                                        bookTransaction.Status = item.Status;
                                         bookTransaction.StudentId = item.StudentId;
                                         _context.Entry(bookTransaction).State = EntityState.Modified;
                                     }
@@ -111,9 +111,9 @@ namespace LMS.Areas.Admin.Repository
                         };
                         await _context.Transaction.AddAsync(Transaction);
                         await _context.SaveChangesAsync();
-                        if(model.BookTransactionList.Count > 0)
+                        if (model.BookTransactionList.Count > 0)
                         {
-                            foreach(var item in model.BookTransactionList)
+                            foreach (var item in model.BookTransactionList)
                             {
                                 BookTransaction bookTransaction = new BookTransaction()
                                 {
@@ -166,6 +166,6 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-       
+
     }
 }

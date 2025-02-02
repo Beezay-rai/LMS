@@ -10,7 +10,7 @@ namespace LMS.Areas.Admin.Controllers
     [ApiController]
     public class DashboardController : ControllerBase
     {
-        private readonly IDashboard _dashboard ;
+        private readonly IDashboard _dashboard;
         public DashboardController(IDashboard dashboard)
         {
             _dashboard = dashboard;
@@ -20,7 +20,7 @@ namespace LMS.Areas.Admin.Controllers
         public async Task<IActionResult> GetDashboardData()
         {
             var data = await _dashboard.GetDashboardData();
-            return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Sucessfully fetched Data " : " Error in fetching data", Data = data });
+            return Ok(new ApiResponseModel() { Status = data != null, Message = data != null ? "Sucessfully fetched Data " : " Error in fetching data", Data = data });
         }
     }
 }

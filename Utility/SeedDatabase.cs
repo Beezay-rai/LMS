@@ -1,7 +1,5 @@
 ﻿using LMS.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace LMS.Utility
 {
@@ -19,15 +17,15 @@ namespace LMS.Utility
 
                 if (adminCred != null && adminCred.Username != null && adminCred.Password != null)
                 {
-                 
+
                     using (var scope = serviceProvider.CreateScope())
                     {
                         var scopedServiceProvider = scope.ServiceProvider;
 
-                        
+
                         var userManager = scopedServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
-                 
+
                         var existingUser = await userManager.FindByEmailAsync(adminCred.Email);
                         if (existingUser == null)
                         {
@@ -80,11 +78,11 @@ namespace LMS.Utility
 
         protected class AdminCred
         {
-            public string Email { get;set; }
+            public string Email { get; set; }
             public string Username { get; set; }
             public string Password { get; set; }
         }
     }
 
-  
+
 }

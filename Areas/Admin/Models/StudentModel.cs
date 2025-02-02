@@ -35,7 +35,7 @@ namespace LMS.Areas.Admin.Models
         [DataType(DataType.Date)]
         public DateTime BirthDate { get; set; }
 
-     
+
 
     }
 }

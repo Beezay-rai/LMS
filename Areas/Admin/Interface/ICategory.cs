@@ -7,7 +7,8 @@ namespace LMS.Areas.Admin.Interface
 
         Task<List<CategoryModel>> GetAllCategory();
         Task<CategoryModel> GetCategoryById(int id);
-        Task<bool> InsertUpdateCategory(CategoryModel model);
+        Task<bool> AddCourse(POSTCategoryModel model);
+        Task<bool> UpdateCourse(int courseId, POSTCategoryModel model);
         Task<bool> DeleteCategory(int id);
     }
 }

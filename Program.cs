@@ -4,14 +4,18 @@ using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
+using LMS.Services;
 using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Readers;
+using Microsoft.OpenApi.Writers;
 using Serilog;
+using System.IO;
 using System.Text;
 using System.Text.Json;
 
@@ -27,7 +31,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 
 #region Authentication
 builder.Services.AddAuthentication(options =>
@@ -77,12 +82,18 @@ builder.Services.AddAuthentication(options =>
 #endregion
 
 
+var openApiFile = Path.Combine(builder.Environment.WebRootPath, "api-doc", "openapi.json");
+var stream = new FileStream(openApiFile, FileMode.Open);
+
+OpenApiDocument openApiDocument = new OpenApiStreamReader().Read(stream, out var diagnostic);
+
+
 
 builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Name = "Authorization",
@@ -104,23 +115,43 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
-
 //Register Here
-builder.Services.AddTransient<IAccount, AccountRepository>();
-builder.Services.AddTransient<IBook, BookRepository>();
-builder.Services.AddTransient<IStudent, StudentRepository>();
-builder.Services.AddTransient<ICourse, CourseRepository>();
-builder.Services.AddTransient<ITransaction, TransactionRepository>();
-builder.Services.AddTransient<ICategory, CategoryRepository>();
-builder.Services.AddTransient<IDashboard, DashboardRepository>();
-builder.Services.AddTransient<IUtility, Utilities>();
+builder.Services.AddScoped<IAccount, AccountRepository>();
+builder.Services.AddScoped<IBook, BookRepository>();
+builder.Services.AddScoped<IStudent, StudentRepository>();
+builder.Services.AddScoped<ICourse, CourseRepository>();
+builder.Services.AddScoped<ITransaction, TransactionRepository>();
+builder.Services.AddScoped<ICategory, CategoryRepository>();
+builder.Services.AddScoped<IDashboard, DashboardRepository>();
+builder.Services.AddScoped<IUtility, Utilities>();
+
+
+//builder.Services.AddOpenTelemetry()
+//    .ConfigureResource(resource =>
+//{
+//    resource.AddService("LMS");
+//})
+//    .WithMetrics(metric =>
+//    {
+//        metric.AddAspNetCoreInstrumentation();
+//        metric.AddHttpClientInstrumentation();
+//        metric.AddOtlpExporter();
+//    })
+//    .WithTracing(tracing =>
+//    {
+//        tracing.AddAspNetCoreInstrumentation();
+//        tracing.AddHttpClientInstrumentation();
+//        tracing.AddOtlpExporter();
+
+//    });
 
 builder.Services.AddCors(option =>
 {
     option.AddPolicy("LmsReact", policy =>
     {
-        policy.WithOrigins(new string[] { "https://our-library.vercel.app", "http://localhost:3000" })
+        policy.WithOrigins(new string[] { "http://localhost:5002" })
         .AllowAnyMethod()
+        .AllowCredentials()
         .AllowAnyHeader();
     });
 });
@@ -133,6 +164,7 @@ var logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+//builder.Logging.AddOpenTelemetry(logging => { logging.AddOtlpExporter(); });
 #endregion
 
 
@@ -144,8 +176,9 @@ SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(), app.Serv
 logger.Information("LMS App Running !");
 
 
+app.MapHub<SignalrChatHub>("/chatHub");
 
-
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
@@ -162,72 +195,5 @@ app.MapControllers();
 app.Run();
 
 
-#region Create Role and  initial User Register
 
-void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
-{
-    var roleNames = new List<string>()
-    {
-        "Administrator",
-        "SuperAdmin",
-        "Admin",
-        "User"
-    };
-
-    //Creating roles
-    foreach (var role in roleNames) { CreateRole(serviceProvider, role); }
-
-    //Administrator User Setup
-    const string administratorUserEmail = "Administrator@gmail.com";
-    const string administratorPwd = "Administrator@4744";
-    AddUserToRole(serviceProvider, new ApplicationUser()
-    {
-        FirstName = "Yuki",
-        LastName = "Rei",
-        Email = administratorUserEmail,
-        UserName = administratorUserEmail,
-        EmailConfirmed = true,
-        LockoutEnabled = false,
-        Active = true,
-    }, administratorPwd, "Administrator");
-
-
-
-}
-//<Summary>
-//Create a role if not exists
-//</Summary>
-/// <param name="serviceProvider">Service Provider</param>
-/// <param name="roleName">Role Name</param>
-void CreateRole(IServiceProvider serviceProvider, string roleName)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roleExists = roleManager.RoleExistsAsync(roleName);
-    roleExists.Wait();
-    if (roleExists.Result) return;
-    var roleResult = roleManager.CreateAsync(new IdentityRole(roleName));
-    roleResult.Wait();
-}
-
-//<summary>
-//Add user to a role if the user exits,otherwise create the user and adds him to the role
-//</summary>
-void AddUserToRole(IServiceProvider serviceProvider, ApplicationUser user, string userPwd, string roleName)
-{
-    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    Task<ApplicationUser> checkAppUser = userManager.FindByEmailAsync(user.Email);
-    checkAppUser.Wait();
-    ApplicationUser appUser = checkAppUser.Result;
-    if (checkAppUser.Result == null)
-    {
-        Task<IdentityResult> taskCreateAppUser = userManager.CreateAsync(user, userPwd);
-        if (taskCreateAppUser.Result.Succeeded)
-        {
-            appUser = user;
-        }
-    }
-    Task<IdentityResult> newUserRole = userManager.AddToRoleAsync(appUser, roleName);
-    newUserRole.Wait();
-}
-#endregion
 

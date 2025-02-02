@@ -5,8 +5,6 @@ namespace LMS.Utility
 {
     public interface IUtility
     {
-
-
         Task<List<Claim>> GetUserClaims(ApplicationUser user);
         string GenerateJWTToken(List<Claim> authclaims);
 

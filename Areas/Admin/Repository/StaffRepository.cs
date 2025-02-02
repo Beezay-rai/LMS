@@ -22,7 +22,7 @@ namespace LMS.Areas.Admin.Repository
         #region Staff
         public async Task<List<StaffModel>> GetAllStaff()
         {
-            return await _context.Staff.Where(x=>x.Deleted==false).Select(x => new StaffModel()
+            return await _context.Staff.Where(x => x.Deleted == false).Select(x => new StaffModel()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
@@ -35,7 +35,7 @@ namespace LMS.Areas.Admin.Repository
 
         public async Task<StaffModel> GetStaffById(int id)
         {
-            return await _context.Staff.Where(x => x.Id == id && x.Deleted==false).Select(x => new StaffModel()
+            return await _context.Staff.Where(x => x.Id == id && x.Deleted == false).Select(x => new StaffModel()
             {
                 Id = x.Id,
                 FirstName = x.FirstName,
@@ -77,8 +77,8 @@ namespace LMS.Areas.Admin.Repository
                         BirthDate = model.BirthDate,
                         Contact = model.Contact,
                         EmailAddress = model.EmailAddress,
-                        CreatedBy=_userId,
-                        CreatedDate= DateTime.UtcNow,
+                        CreatedBy = _userId,
+                        CreatedDate = DateTime.UtcNow,
                     };
                     await _context.Staff.AddAsync(staff);
                 }
@@ -96,11 +96,11 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var staff = await _context.Staff.FindAsync(id);
-                if (staff != null && staff.Deleted==false)
+                if (staff != null && staff.Deleted == false)
                 {
                     staff.Deleted = true;
                     staff.DeletedDate = DateTime.UtcNow;
-                    staff.DeletedBy=_userId;
+                    staff.DeletedBy = _userId;
                     _context.Entry(staff).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return true;

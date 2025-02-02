@@ -4,12 +4,7 @@ using LMS.Interface;
 using LMS.Models;
 using LMS.Utility;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Data;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace LMS.Repository
 {
@@ -29,9 +24,9 @@ namespace LMS.Repository
             _context = context;
         }
 
-        public async Task<ApiResponse> SignUp(SignUpModel model)
+        public async Task<ApiResponseModel> SignUp(SignUpModel model)
         {
-            var response = new ApiResponse();
+            var response = new ApiResponseModel();
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
@@ -83,19 +78,19 @@ namespace LMS.Repository
 
 
 
-        public async Task<ApiResponse> Login(LoginModel model)
+        public async Task<ApiResponseModel> Login(LoginModel model)
         {
             var user = await _signInManager.PasswordSignInAsync(model.Username, model.Password, false, false);
             if (user.Succeeded)
             {
-                
+
                 var userCheck = await _userManager.FindByNameAsync(model.Username);
                 if (userCheck != null)
                 {
                     var userRoles = await _userManager.GetRolesAsync(userCheck);
                     var role = userRoles.FirstOrDefault() ?? "";
                     var authClaims = await _utility.GetUserClaims(userCheck);
-                    var response = new ApiResponse()
+                    var response = new ApiResponseModel()
                     {
                         Status = true,
                         Message = "Login Success !",
@@ -114,12 +109,12 @@ namespace LMS.Repository
 
                 }
             }
-            return new ApiResponse() { Status = false };
+            return new ApiResponseModel() { Status = false };
         }
 
-        public async Task<ApiResponse> GoogleLogin(string crediantialToken)
+        public async Task<ApiResponseModel> GoogleLogin(string crediantialToken)
         {
-            var responsemodel = new ApiResponse();
+            var responsemodel = new ApiResponseModel();
             try
             {
                 var Googleresponse = await GoogleJsonWebSignature.ValidateAsync(crediantialToken);
@@ -130,7 +125,7 @@ namespace LMS.Repository
                     var authClaims = await _utility.GetUserClaims(userCheck);
                     var userRoles = await _userManager.GetRolesAsync(userCheck);
                     var role = userRoles.FirstOrDefault() ?? " ";
-                    responsemodel = new ApiResponse()
+                    responsemodel = new ApiResponseModel()
                     {
                         Status = true,
                         Message = "Login Success !",
@@ -154,7 +149,7 @@ namespace LMS.Repository
             catch (Exception ex)
             {
 
-                return responsemodel = new ApiResponse() { Status = false, Message = $"Google Verification Failed ! , Error Message: {ex.Message} " };
+                return responsemodel = new ApiResponseModel() { Status = false, Message = $"Google Verification Failed ! , Error Message: {ex.Message} " };
             }
 
             return responsemodel;
@@ -162,9 +157,9 @@ namespace LMS.Repository
 
         }
 
-        public async Task<ApiResponse> GoogleSignUp(string crediantialToken)
+        public async Task<ApiResponseModel> GoogleSignUp(string crediantialToken)
         {
-            var responsemodel = new ApiResponse();
+            var responsemodel = new ApiResponseModel();
 
             try
             {

@@ -19,9 +19,9 @@ namespace LMS.Areas.Admin.Repository
         {
             var data = new DashboardViewModel()
             {
-                BookCount = await _context.Book.Where(x=>x.Deleted==false).CountAsync() ,
-                IssuedCount = await _context.Transaction.Where(x=>x.Deleted==false).CountAsync(),
-                StudentCount = await _context.Student.Where(x=>x.Deleted==false).CountAsync(),
+                BookCount = await _context.Book.Where(x => x.Deleted == false).CountAsync(),
+                IssuedCount = await _context.Transaction.Where(x => x.Deleted == false).CountAsync(),
+                StudentCount = await _context.Student.Where(x => x.Deleted == false).CountAsync(),
             };
 
             //var test = await (from bk in _context.Book
@@ -34,7 +34,7 @@ namespace LMS.Areas.Admin.Repository
 
             //                 ).Take(5).ToListAsync();
 
-            foreach (var item in await _context.Category.Where(x=>x.IsDeleted == false).Take(2).ToListAsync())
+            foreach (var item in await _context.Category.Where(x => x.IsDeleted == false).Take(2).ToListAsync())
             {
                 var count = new PreferenceCount()
                 {
@@ -47,12 +47,12 @@ namespace LMS.Areas.Admin.Repository
             }
             var month = DateTimeFormatInfo.InvariantInfo.MonthNames.Where(d => !string.IsNullOrEmpty(d)).ToList();
             foreach (var monthName in month)
-             {
-                int monthId = month.IndexOf(monthName )+1;
+            {
+                int monthId = month.IndexOf(monthName) + 1;
                 var count = new UserActivityCount()
                 {
                     MonthName = monthName,
-                    PresentCount = _context.Transaction.Where(x => x.CreatedDate.Month == monthId ).Count(),
+                    PresentCount = _context.Transaction.Where(x => x.CreatedDate.Month == monthId).Count(),
                     PreviousCount = _context.Transaction.Where(x => x.CreatedDate.Day == monthId && x.CreatedDate.Day == (DateTime.Now.Day)).Count(),
                 };
                 data.UserActivityCountList.Add(count);

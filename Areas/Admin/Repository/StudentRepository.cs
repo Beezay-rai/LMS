@@ -26,10 +26,10 @@ namespace LMS.Areas.Admin.Repository
                 FirstName = x.FirstName,
                 LastName = x.LastName,
                 BirthDate = x.BirthDate,
-                CourseId =x.CourseId,
-                CourseName = _context.Course.Where(z=>z.Id==x.CourseId).Select(x=>x.CourseName).FirstOrDefault(),
-                EmailAddress=x.EmailAddress,
-                PhoneNumber=x.PhoneNumber
+                CourseId = x.CourseId,
+                CourseName = _context.Course.Where(z => z.Id == x.CourseId).Select(x => x.CourseName).FirstOrDefault(),
+                EmailAddress = x.EmailAddress,
+                PhoneNumber = x.PhoneNumber
             }).ToListAsync();
         }
         public async Task<StudentGETModel> GetStudentById(int id)
@@ -43,8 +43,8 @@ namespace LMS.Areas.Admin.Repository
                 CourseId = x.CourseId,
                 CourseName = _context.Course.Where(z => z.Id == x.CourseId).Select(x => x.CourseName).FirstOrDefault(),
                 EmailAddress = x.EmailAddress,
-                PhoneNumber=x.PhoneNumber
-                
+                PhoneNumber = x.PhoneNumber
+
             }).FirstOrDefaultAsync();
         }
         public async Task<bool> InsertUpdateStudent(StudentModel model)
@@ -77,9 +77,9 @@ namespace LMS.Areas.Admin.Repository
                         FirstName = model.FirstName,
                         LastName = model.LastName,
                         BirthDate = model.BirthDate,
-                        EmailAddress=model.EmailAddress,
-                        CourseId=model.CourseId,
-                        PhoneNumber=model.PhoneNumber,
+                        EmailAddress = model.EmailAddress,
+                        CourseId = model.CourseId,
+                        PhoneNumber = model.PhoneNumber,
                         CreatedBy = _userId,
                         CreatedDate = DateTime.UtcNow,
                         Deleted = false
@@ -97,7 +97,7 @@ namespace LMS.Areas.Admin.Repository
         public async Task<bool> DeleteStudent(int id)
         {
             var data = await _context.Student.Where(x => x.Id == id && x.Deleted == false).FirstOrDefaultAsync();
-            if (data != null && data.Deleted==false)
+            if (data != null && data.Deleted == false)
             {
                 data.Deleted = true;
                 data.DeletedDate = DateTime.UtcNow;

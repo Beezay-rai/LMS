@@ -24,7 +24,7 @@ namespace LMS.Areas.Admin.Repository
             return await _context.Course.Where(x => x.Deleted == false).Select(x => new CourseModel()
             {
                 Id = x.Id,
-                CourseName = x.CourseName,
+                Name = x.CourseName,
                 Semester = x.Semester,
                 Credits = x.Credits,
                 Description = x.Description,
@@ -35,46 +35,28 @@ namespace LMS.Areas.Admin.Repository
             return await _context.Course.Where(x => x.Id == id && x.Deleted == false).Select(x => new CourseModel()
             {
                 Id = x.Id,
-                CourseName = x.CourseName,
+                Name = x.CourseName,
                 Semester = x.Semester,
                 Credits = x.Credits,
                 Description = x.Description,
             }).FirstOrDefaultAsync();
         }
-        public async Task<bool> InsertUpdateCourse(CourseModel model)
+        public async Task<bool> AddCourse(POSTCourseModel model)
         {
             try
             {
-                if (model.Id > 0)
+                Course Faculty = new Course()
                 {
-                    var Course = await _context.Course.FindAsync(model.Id);
-                    if (Course != null)
-                    {
-                        Course.CourseName = model.CourseName;
-                        Course.Credits = model.Credits;
-                        Course.Semester = model.Semester;
-                        Course.Description = model.Description;
-                        Course.Deleted = false;
-                        Course.UpdatedBy = _userId;
-                        Course.UpdatedDate = DateTime.UtcNow;
-                        _context.Entry(Course).State = EntityState.Modified;
-                    }
-                    else { return false; }
-                }
-                else
-                {
-                    Course Faculty = new Course()
-                    {
-                        CourseName = model.CourseName,
-                        Credits=model.Credits,
-                        Semester= model.Semester,
-                        Description= model.Description, 
-                        Deleted = false,
-                        CreatedBy = _userId,
-                        CreatedDate = DateTime.UtcNow
-                    };
-                    await _context.Course.AddAsync(Faculty);
-                }
+                    CourseName = model.Name,
+                    Credits = model.Credits,
+                    Semester = model.Semester,
+                    Description = model.Description,
+                    Deleted = false,
+                    CreatedBy = _userId,
+                    CreatedDate = DateTime.UtcNow
+                };
+                await _context.Course.AddAsync(Faculty);
+
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -87,13 +69,13 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var Faculty = await _context.Course.FindAsync(id);
-                if (Faculty != null && Faculty.Deleted==false)
+                var course = await _context.Course.FindAsync(id);
+                if (course != null && course.Deleted == false)
                 {
-                    Faculty.Deleted = true;
-                    Faculty.DeletedBy = _userId;
-                    Faculty.DeletedDate = DateTime.UtcNow;
-                    _context.Entry(Faculty).State = EntityState.Modified;
+                    course.Deleted = true;
+                    course.DeletedBy = _userId;
+                    course.DeletedDate = DateTime.UtcNow;
+                    _context.Entry(course).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                     return true;
                 }
@@ -108,7 +90,33 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
+        public async Task<bool> UpdateCourse(int courseId, POSTCourseModel model)
+        {
 
-
+            try
+            {
+                var course = await _context.Course.FindAsync(courseId);
+                if (course != null && course.Deleted == false)
+                {
+                    course.CourseName = model.Name;
+                    course.Credits = model.Credits;
+                    course.Semester = model.Semester;
+                    course.Description = model.Description;
+                    course.UpdatedBy = _userId;
+                    course.UpdatedDate = DateTime.UtcNow;
+                    _context.Entry(course).State = EntityState.Modified;
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

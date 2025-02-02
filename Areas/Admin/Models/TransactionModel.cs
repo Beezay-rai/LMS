@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Areas.Admin.Models
 {
-    public class TransactionGETModel 
+    public class TransactionGETModel
     {
         public TransactionGETModel()
         {
@@ -17,7 +17,7 @@ namespace LMS.Areas.Admin.Models
 
 
         public string Remarks { get; set; }
-        
+
         public List<BookTransactionGETModel> BookTransactionList { get; set; }
     }
     public class TransactionModel
@@ -27,8 +27,8 @@ namespace LMS.Areas.Admin.Models
             BookTransactionList = new List<BookTransactionModel>();
         }
         public int Id { get; set; }
-       
-     
+
+
         public string Remarks { get; set; }
         public List<BookTransactionModel> BookTransactionList { get; set; }
 

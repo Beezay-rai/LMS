@@ -22,9 +22,9 @@
     {
         public int Id { get; set; }
         public string MonthName { get; set; }
-        public int PresentCount { get; set; }  
-        public int PreviousCount { get; set; }  
+        public int PresentCount { get; set; }
+        public int PreviousCount { get; set; }
     }
 
-    
+
 }

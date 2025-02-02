@@ -1,14 +1,7 @@
-﻿using Google.Apis.Auth;
-using LMS.Interface;
+﻿using LMS.Interface;
 using LMS.Models;
-using LMS.Utility;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace LMS.Controllers
 {
@@ -16,8 +9,10 @@ namespace LMS.Controllers
     public class AuthenticateController : ControllerBase
     {
         private readonly IAccount _account;
-        public AuthenticateController(IAccount account)
+        private readonly ILogger<AuthenticateController> _logger;
+        public AuthenticateController(IAccount account, ILogger<AuthenticateController> logger)
         {
+            _logger = logger;
             _account = account;
         }
         [HttpPost]
@@ -34,6 +29,7 @@ namespace LMS.Controllers
         [Route("api/login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
+            //_logger.LogInformation("Model Provided : {Model}", model);
             return Ok(await _account.Login(model));
         }
 

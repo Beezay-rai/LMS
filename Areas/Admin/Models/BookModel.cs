@@ -1,35 +1,16 @@
-﻿using LMS.Data;
+﻿using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace LMS.Areas.Admin.Models
 {
-    public class BookGETModel
-    {
-        public BookGETModel()
-        {
-            BookCategoryDetailList = new List<BookCategoryDetailGETModel>();
-        }
-
-        public int Id { get; set; }
-        public string BookName { get; set; }
-        public string AuthorName { get; set; }
-        public string ISBN { get; set; }
-        public int Quantity { get; set; }
-        [DataType(DataType.Date)]
-        public DateTime PublicationDate { get; set; }
-
-        public List<BookCategoryDetailGETModel> BookCategoryDetailList { get; set; }
-
-
-    }
     public class BookModel
     {
         public BookModel()
         {
-            BookCategoryDetailList = new List<BookCategoryDetailModel>();
+            BookCategories = new List<BookCategoryModel>();
         }
-
+        [SwaggerIgnore]
         public int Id { get; set; }
         [Required]
         public string BookName { get; set; }
@@ -40,27 +21,21 @@ namespace LMS.Areas.Admin.Models
         [Required]
         public int Quantity { get; set; }
         [Required]
-        [DataType(DataType.Date)]
         public DateTime PublicationDate { get; set; }
-        public List<BookCategoryDetailModel> BookCategoryDetailList { get; set; } 
+        public List<BookCategoryModel> BookCategories { get; set; }
 
     }
-    public class BookCategoryDetailModel
+    public class BookCategoryModel
     {
+        [SwaggerIgnore]
         public int Id { get; set; }
-        [Required]
+        [SwaggerIgnore]
         public int BookId { get; set; }
         [Required]
         public int CategoryId { get; set; }
-     
-    }
-    public class BookCategoryDetailGETModel
-    {
-        public int Id { get; set; }
+        [SwaggerIgnore]
+        public string  CategoryName { get; set; }
 
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-     
     }
 
 }

@@ -39,12 +39,7 @@ namespace LMS.Models
         public string Password { get; set; }
     }
 
-    public class ApiResponse
-    {
-        public bool Status { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public object Data { get; set; } = new object();
-    }
+   
 
 
     public class LoginResponse

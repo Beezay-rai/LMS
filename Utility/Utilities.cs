@@ -43,10 +43,10 @@ namespace LMS.Utility
             var role = userRoles.FirstOrDefault() ?? " ";
             var authClaims = new List<Claim>
                     {
+                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                         new Claim(ClaimTypes.Role, role),
                         new Claim(ClaimTypes.Name,user.FirstName+ user.LastName),
                         new Claim(ClaimTypes.NameIdentifier,user.Id),
-                        new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString())
                     };
             return authClaims;
         }

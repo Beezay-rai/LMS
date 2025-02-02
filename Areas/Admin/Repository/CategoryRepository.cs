@@ -21,7 +21,7 @@ namespace LMS.Areas.Admin.Repository
 
         public async Task<List<CategoryModel>> GetAllCategory()
         {
-            return await _context.Category.Where(x=>x.IsDeleted==false).Select(x => new CategoryModel()
+            return await _context.Category.Where(x => x.IsDeleted == false).Select(x => new CategoryModel()
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -29,44 +29,14 @@ namespace LMS.Areas.Admin.Repository
         }
         public async Task<CategoryModel> GetCategoryById(int id)
         {
-            return await _context.Category.Where(x => x.Id == id && x.IsDeleted == false ).Select(x => new CategoryModel()
+            return await _context.Category.Where(x => x.Id == id && x.IsDeleted == false).Select(x => new CategoryModel()
             {
                 Id = x.Id,
                 Name = x.Name,
-                
+
             }).FirstOrDefaultAsync();
         }
-        public async Task<bool> InsertUpdateCategory(CategoryModel model)
-        {
-            try
-            {
-                if (model.Id > 0)
-                {
-                    var Category = await _context.Category.FirstOrDefaultAsync(x => x.Id == model.Id && x.IsDeleted == false);
-                    if (Category != null)
-                    {
-                        Category.Name = model.Name;
-
-                        _context.Entry(Category).State = EntityState.Modified;
-                    }
-                }
-                else
-                {
-                    Category Category = new Category()
-                    {
-                        Name = model.Name,
-
-                    };
-                    await _context.Category.AddAsync(Category);
-                }
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+       
         public async Task<bool> DeleteCategory(int id)
         {
             try
@@ -88,7 +58,51 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
+        public async Task<bool> AddCourse(POSTCategoryModel model)
+        {
+            try
+            {
+                Category Category = new Category()
+                {
+                    Name = model.Name,
 
+                };
+                await _context.Category.AddAsync(Category);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+           
+        }
 
+        public async Task<bool> UpdateCourse(int courseId, POSTCategoryModel model)
+        {
+            try
+            {
+                if (courseId > 0)
+                {
+                    var Category = await _context.Category.FirstOrDefaultAsync(x => x.Id == courseId && x.IsDeleted == false);
+                    if (Category != null)
+                    {
+                        Category.Name = model.Name;
+
+                        _context.Entry(Category).State = EntityState.Modified;
+                    }
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+            
+        }
     }
 }
