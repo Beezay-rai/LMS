@@ -6,36 +6,22 @@ namespace LMS.Areas.Admin.Models
 {
     public class BookModel
     {
-        public BookModel()
-        {
-            BookCategories = new List<BookCategoryModel>();
-        }
+     
         [SwaggerIgnore]
         public int Id { get; set; }
         [Required]
-        public string BookName { get; set; }
+        public string book_name { get; set; }
         [Required]
-        public string ISBN { get; set; }
+        public string isbn { get; set; }
         [Required]
-        public string AuthorName { get; set; }
+        public string author_name { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public int quantity { get; set; }
         [Required]
-        public DateTime PublicationDate { get; set; }
-        public List<BookCategoryModel> BookCategories { get; set; }
+        public DateTime publication_date { get; set; }
+        public List<int> book_categories { get; set; }
 
     }
-    public class BookCategoryModel
-    {
-        [SwaggerIgnore]
-        public int Id { get; set; }
-        [SwaggerIgnore]
-        public int BookId { get; set; }
-        [Required]
-        public int CategoryId { get; set; }
-        [SwaggerIgnore]
-        public string  CategoryName { get; set; }
-
-    }
+ 
 
 }

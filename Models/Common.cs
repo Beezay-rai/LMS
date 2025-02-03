@@ -23,6 +23,11 @@ namespace LMS.Models
         [JsonPropertyOrder(3)]
         public List<T> Errors { get; set; } = new List<T>();
     }
+    public class ErrorDetailModel
+    {
+        public string Message { get; set; }
+        public string StackTrace { get; set; }
+    }
 
- 
+
 }

@@ -1,4 +1,5 @@
-﻿using LMS.Areas.Admin.Interface;
+﻿using AutoMapper;
+using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using LMS.Models;
@@ -10,277 +11,239 @@ namespace LMS.Areas.Admin.Repository
 {
     public class BookRepository : IBook
     {
+        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<BookRepository> _logger;
         private readonly string _userId;
 
-        public BookRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, ILogger<BookRepository> logger)
+        public BookRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper, ILogger<BookRepository> logger)
         {
+            _mapper = mapper;
             _context = context;
             _contextAccessor = contextAccessor;
-            _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             _logger = logger;
+            _userId = _contextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
         public async Task<BaseApiResponseModel> GetAllBook()
         {
-            var data = await _context.Book.Where(x => x.Deleted == false).Select(x => new BookModel()
+            try
             {
-                Id = x.Id,
-                BookName = x.BookName,
-                AuthorName = x.AuthorName,
-                ISBN = x.ISBN,
-                PublicationDate = x.PublicationDate,
-                Quantity = x.Quantity,
-                BookCategories = _context.BookCategoryDetail.Where(z => z.BookId == x.Id).Select(z => new BookCategoryModel()
-                {
-                    Id = z.Id,
-                    CategoryId = z.CategoryId,
-                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.delete_status == false).Select(y => y.Name).FirstOrDefault()
+                var books = await _context.Book
+                    .Where(x => !x.delete_status)
+                    .ToListAsync();
 
-                }).ToList()
-            }).ToListAsync();
-            var response = new ApiResponseModel<List<BookModel>>()
+                var data = _mapper.Map<List<BookModel>>(books);
+
+                return new ApiResponseModel<List<BookModel>>
+                {
+                    Status = true,
+                    HttpStatusCode = HttpStatusCode.OK,
+                    Message = "Book List Retrieved",
+                    Data = data
+                };
+            }
+            catch (Exception ex)
             {
-                HttpStatusCode=HttpStatusCode.OK,
-                Status = true,
-                Message = "Book List",
-                Data = data
-            };
-            return response;
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
+            }
         }
+
         public async Task<BaseApiResponseModel> GetBookById(int id)
         {
-            var response = new ApiResponseModel<BookModel>();
-            var data =await _context.Book.Where(x => x.Id == id && x.Deleted == false).Select(x => new BookModel()
+            try
             {
+                var book = await _context.Book
+                    .FirstOrDefaultAsync(x => x.id == id && !x.delete_status);
 
-                Id = x.Id,
-                BookName = x.BookName,
-                AuthorName = x.AuthorName,
-                ISBN = x.ISBN,
-                PublicationDate = x.PublicationDate,
-                Quantity = x.Quantity,
-                BookCategories = _context.BookCategoryDetail.Where(z => z.BookId == x.Id).Select(z => new BookCategoryModel()
+                if (book == null)
                 {
-                    Id = z.Id,
-                    CategoryId = z.CategoryId,
-                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.delete_status == false).Select(y => y.Name).FirstOrDefault()
+                    return new ApiErrorResponseModel<BookModel>
+                    {
+                        Status = false,
+                        Message = "Book not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
+                }
 
-                }).ToList()
-            }).FirstOrDefaultAsync();
-            if(data != null)
-            {
-                response.HttpStatusCode = HttpStatusCode.OK;
-                response.Data = data;
-                response.Message = "Book with id : " + id;
+                var data = _mapper.Map<BookModel>(book);
 
-
+                return new ApiResponseModel<BookModel>
+                {
+                    Status = true,
+                    HttpStatusCode = HttpStatusCode.OK,
+                    Message = "Book retrieved successfully",
+                    Data = data
+                };
             }
-            else
+            catch (Exception ex)
             {
-                response.HttpStatusCode = HttpStatusCode.NotFound;
-                response.Data = null;
-                response.Message = "Book Not Found with Id : " + id;
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
             }
-            return response;
         }
-        public async Task<bool> InsertUpdateBook(BookModel model)
+
+        public async Task<BaseApiResponseModel> AddBook(BookModel model)
         {
             using (var transaction = _context.Database.BeginTransaction())
             {
                 try
                 {
-                    if (model.Id > 0)
+
+                    var book = _mapper.Map<Book>(model);
+                    book.created_by = _userId;
+                    book.created_date = DateTime.UtcNow;
+                    book.delete_status = false;
+
+                    await _context.Book.AddAsync(book);
+                    await _context.SaveChangesAsync();
+                    if (book.id > 0 && model.book_categories?.Any() == true)
                     {
-                        var book = await _context.Book.FindAsync(model.Id);
-                        if (book != null)
-                        {
-                            book.BookName = model.BookName;
-                            book.AuthorName = model.AuthorName;
-                            book.ISBN = model.ISBN;
-                            book.PublicationDate = model.PublicationDate;
-                            book.Quantity = model.Quantity;
-                            book.UpdatedBy = _userId;
-                            book.UpdatedDate = DateTime.UtcNow;
-                            _context.Entry(book).State = EntityState.Modified;
-                            await _context.SaveChangesAsync();
-
-                            if (model.BookCategories.Count > 0)
+                        var bookCategoryDetails = model.book_categories
+                            .Select(categoryId => new BookCategoryDetail
                             {
-                                foreach (var item in model.BookCategories)
-                                {
-                                    var bookCategoryDetail = await _context.BookCategoryDetail.Where(x => x.BookId == book.Id && x.Id == item.Id).FirstOrDefaultAsync();
-                                    if (bookCategoryDetail != null)
-                                    {
-                                        bookCategoryDetail.BookId = item.BookId;
-                                        bookCategoryDetail.CategoryId = item.CategoryId;
-                                        _context.Entry(bookCategoryDetail).State = EntityState.Modified;
-                                        await _context.SaveChangesAsync();
-                                    }
-                                }
-                            }
+                                BookId = book.id,
+                                CategoryId = categoryId
+                            }).ToList();
 
-
-                        }
+                        await _context.BookCategoryDetail.AddRangeAsync(bookCategoryDetails);
                     }
-                    else
-                    {
-                        Book book = new Book()
-                        {
-                            BookName = model.BookName,
-                            AuthorName = model.AuthorName,
-                            ISBN = model.ISBN,
-                            PublicationDate = model.PublicationDate,
-                            Quantity = model.Quantity,
-                            Deleted = false,
-                            CreatedBy = _userId,
-                            CreatedDate = DateTime.UtcNow
-                        };
-                        await _context.Book.AddAsync(book);
-                        await _context.SaveChangesAsync();
-
-
-                        if (model.BookCategories.Count > 0)
-                        {
-                            foreach (var item in model.BookCategories)
-                            {
-                                BookCategoryDetail bookCategoryDetail = new BookCategoryDetail()
-                                {
-                                    BookId = book.Id,
-                                    CategoryId = item.CategoryId,
-                                };
-                                await _context.BookCategoryDetail.AddAsync(bookCategoryDetail);
-                                await _context.SaveChangesAsync();
-                            }
-
-                        }
-                    }
+                    var data = _mapper.Map<BookModel>(book);
+                    data.book_categories = model.book_categories;
                     await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
-                    return true;
+                    return new ApiResponseModel<BookModel>
+                    {
+                        Status = true,
+                        Message = "Book added successfully",
+                        HttpStatusCode = HttpStatusCode.Created,
+                        Data = data
+                    };
+
+
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogInformation($"Error , DateTime:{DateTime.UtcNow}, UserId:{_userId},Error Description:{ex} ");
                     await transaction.RollbackAsync();
-
-                    return false;
-                }
-
-            }
-
-        }
-
-
-
-        public async Task<BaseApiResponseModel> AddBook(BookModel model)
-        {
-            var response = new ApiResponseModel<BookModel>();
-            try
-            {
-                Book book = new Book()
-                {
-                    BookName = model.BookName,
-                    AuthorName = model.AuthorName,
-                    ISBN = model.ISBN,
-                    PublicationDate = model.PublicationDate,
-                    Quantity = model.Quantity,
-                    Deleted = false,
-                    CreatedBy = _userId,
-                    CreatedDate = DateTime.UtcNow
-                };
-                await _context.Book.AddAsync(book);
-                await _context.SaveChangesAsync();
-                return response;
-            }
-            catch
-            {
-                return response;
-            }
-
-        }
-
-        public async Task<BaseApiResponseModel> UpdateBook(int BookId, BookModel model)
-        {
-            var response = new ApiResponseModel<BookModel>();
-            try
-            {
-                if (BookId > 0)
-                {
-                    var book = await _context.Book.FindAsync(model.Id);
-                    if (book != null)
+                    return new ApiErrorResponseModel<ErrorDetailModel>
                     {
-                        book.BookName = model.BookName;
-                        book.AuthorName = model.AuthorName;
-                        book.ISBN = model.ISBN;
-                        book.PublicationDate = model.PublicationDate;
-                        book.Quantity = model.Quantity;
-                        book.UpdatedBy = _userId;
-                        book.UpdatedDate = DateTime.UtcNow;
-                        _context.Entry(book).State = EntityState.Modified;
-                        await _context.SaveChangesAsync();
-
-                        if (model.BookCategories.Count > 0)
+                        Status = false,
+                        Message = ex.Message,
+                        Errors = new List<ErrorDetailModel>
                         {
-                            foreach (var item in model.BookCategories)
-                            {
-                                var bookCategoryDetail = await _context.BookCategoryDetail.Where(x => x.BookId == book.Id && x.Id == item.Id).FirstOrDefaultAsync();
-                                if (bookCategoryDetail != null)
-                                {
-                                    bookCategoryDetail.BookId = item.BookId;
-                                    bookCategoryDetail.CategoryId = item.CategoryId;
-                                    _context.Entry(bookCategoryDetail).State = EntityState.Modified;
-                                    await _context.SaveChangesAsync();
-                                }
-                            }
-                        }
-
-
-                    }
-                    return response;
+                             new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                        },
+                        HttpStatusCode = HttpStatusCode.InternalServerError
+                    };
                 }
-                else
+
+            }
+        }
+
+        public async Task<BaseApiResponseModel> UpdateBook(int bookId, BookModel model)
+        {
+            try
+            {
+                model.Id = bookId;
+                var book = await _context.Book.FirstOrDefaultAsync(x => x.id == bookId && !x.delete_status);
+                if (book == null)
                 {
-                    return response;
+                    return new ApiErrorResponseModel<BookModel>
+                    {
+                        Status = false,
+                        Message = "Book not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
                 }
+
+                _mapper.Map(model, book);
+                book.updated_by = _userId;
+                book.updated_date = DateTime.UtcNow;
+
+                _context.Entry(book).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseModel<BookModel>
+                {
+                    Status = true,
+                    Message = "Book updated successfully",
+                    HttpStatusCode = HttpStatusCode.OK,
+                    Data = _mapper.Map<BookModel>(book)
+                };
             }
             catch (Exception ex)
             {
-                return response;
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
             }
-
         }
 
         public async Task<BaseApiResponseModel> DeleteBook(int id)
         {
-            var response = new ApiResponseModel<BookModel>();
             try
             {
-                var Book = await _context.Book.FindAsync(id);
-                if (Book != null && Book.Deleted == false)
+                var book = await _context.Book.FirstOrDefaultAsync(x => x.id == id && !x.delete_status);
+                if (book == null)
                 {
-                    Book.Deleted = true;
-                    Book.DeletedBy = _userId;
-                    Book.DeletedDate = DateTime.UtcNow;
-                    _context.Entry(Book).State = EntityState.Modified;
-                    await _context.SaveChangesAsync();
-                    return response;
+                    return new ApiResponseModel<int>
+                    {
+                        Status = false,
+                        Data = id,
+                        Message = "Book not found",
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
                 }
-                else
+
+                book.delete_status = true;
+                book.deleted_by = _userId;
+                book.deleted_date = DateTime.UtcNow;
+
+                _context.Entry(book).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new BaseApiResponseModel
                 {
-                    return response;
-                }
+                    Status = true,
+                    Message = "Book deleted successfully",
+                    HttpStatusCode = HttpStatusCode.OK
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogInformation($"Error , DateTime:{DateTime.UtcNow}, UserId:{_userId},Error Description:{ex} ");
-                return response;
+                return new ApiErrorResponseModel<Exception>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    Errors = new List<Exception> { ex },
+                    HttpStatusCode = HttpStatusCode.InternalServerError
+                };
             }
         }
-
-
-
     }
 }

@@ -4,7 +4,6 @@ using LMS.Areas.Admin.Models;
 using LMS.Data;
 using LMS.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 
@@ -17,7 +16,7 @@ namespace LMS.Areas.Admin.Repository
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string _userId;
 
-        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor,IMapper mapper)
+        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
         {
             _mapper = mapper;
             _context = context;
@@ -39,9 +38,10 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiErrorResponseModel<object>();
+                var errorResponse = new ApiErrorResponseModel<Exception>();
                 errorResponse.Message = ex.Message;
-                errorResponse.Status = false;
+                errorResponse.Status = false; 
+                errorResponse.Errors = new List<Exception> { ex };
                 errorResponse.HttpStatusCode = HttpStatusCode.InternalServerError;
                 return errorResponse;
 
@@ -53,15 +53,7 @@ namespace LMS.Areas.Admin.Repository
             var response = new ApiResponseModel<CategoryModel>();
             try
             {
-                var data = await _context.Category
-                    .Where(x => x.Id == id && !x.delete_status)
-                    .Select(x => new CategoryModel
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                    })
-                    .FirstOrDefaultAsync();
-
+                var data = _mapper.Map<CategoryModel>(await _context.Category.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
                 if (data == null)
                 {
                     return new ApiErrorResponseModel<CategoryModel>
@@ -80,10 +72,11 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<CategoryModel>
+                return new ApiErrorResponseModel<Exception>
                 {
                     Status = false,
                     Message = ex.Message,
+                    Errors = new List<Exception>() { ex},
                     HttpStatusCode = HttpStatusCode.InternalServerError
                 };
             }
@@ -93,7 +86,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id );
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
                 if (category == null)
                 {
                     return new ApiErrorResponseModel<bool>
@@ -108,20 +101,20 @@ namespace LMS.Areas.Admin.Repository
                 _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return new ApiResponseModel<bool>
+                return new BaseApiResponseModel
                 {
                     Status = true,
-                    Data = true,
                     Message = "Category deleted successfully",
                     HttpStatusCode = HttpStatusCode.OK
                 };
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<bool>
+                return new ApiErrorResponseModel<Exception>
                 {
                     Status = false,
                     Message = ex.Message,
+                    Errors = new List<Exception>() { ex },
                     HttpStatusCode = HttpStatusCode.InternalServerError
                 };
             }
@@ -159,13 +152,15 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
+                model.Id = categoryId;
                 var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.delete_status);
                 if (category == null)
                 {
-                    return new ApiErrorResponseModel<bool>
+                    return new ApiResponseModel<CategoryModel>
                     {
                         Status = false,
                         Message = "Category not found",
+                        Data = model,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
@@ -174,10 +169,10 @@ namespace LMS.Areas.Admin.Repository
                 _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return new ApiResponseModel<bool>
+                return new ApiResponseModel<CategoryModel>
                 {
                     Status = true,
-                    Data = true,
+                    Data = model,
                     Message = "Category updated successfully",
                     HttpStatusCode = HttpStatusCode.OK
                 };

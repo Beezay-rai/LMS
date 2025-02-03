@@ -1,6 +1,6 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Models;
+using LMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,10 +45,10 @@ namespace LMS.Areas.Admin.Controllers
             return StatusCode((int)data.HttpStatusCode, data);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteCategory(int id)
+        [HttpDelete("{categoryId}")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
         {
-            var data = await _repo.DeleteCategory(id);
+            var data = await _repo.DeleteCategory(categoryId);
             return StatusCode((int)data.HttpStatusCode, data);
         }
 

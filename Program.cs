@@ -7,7 +7,9 @@ using LMS.Repository;
 using LMS.Services;
 using LMS.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -60,23 +62,23 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 
-    options.Events = new JwtBearerEvents
-    {
-        OnChallenge = context =>
-        {
-            context.HandleResponse(); // Suppress the default unauthorized response
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
+    //options.Events = new JwtBearerEvents
+    //{
+    //    OnChallenge = context =>
+    //    {
+    //        context.HandleResponse(); // Suppress the default unauthorized response
+    //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+    //        context.Response.ContentType = "application/json";
 
-            var result = JsonSerializer.Serialize(new
-            {
-                status = false,
-                message = "You are not authorized to access this resource."
-            });
+    //        var result = JsonSerializer.Serialize(new
+    //        {
+    //            status = false,
+    //            message = "You are not authorized to access this resource."
+    //        });
 
-            return context.Response.WriteAsync(result);
-        }
-    };
+    //        return context.Response.WriteAsync(result);
+    //    }
+    //};
 });
 #endregion
 
@@ -175,6 +177,36 @@ SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(), app.Serv
 logger.Information("LMS App Running !");
 
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (exceptionHandlerFeature == null) return;
+
+        var exception = exceptionHandlerFeature.Error;
+        var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+
+        var problem = new ProblemDetails()
+        {
+            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
+            Status = 500,
+            Title = "Internal Server Error",
+        };
+        if (env.IsDevelopment())
+        {
+            problem.Instance = context.Request.Path;
+            problem.Detail = exception.Message;
+        }
+
+
+        await context.Response.WriteAsJsonAsync(problem);
+    });
+});
+
+
 app.MapHub<SignalrChatHub>("/chatHub");
 
 app.UseStaticFiles();
@@ -187,8 +219,28 @@ app.UseCors("LmsReact");
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapFallback(async context =>
+    {
+        context.Response.StatusCode = 404;
+        var problem = new ProblemDetails()
+        {
+            Title = "Not Found",
+            Detail = "Requested Service Not Found",
+            Instance = context.Request.Path,
+            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+            Status = 404,
+        };
+        await context.Response.WriteAsJsonAsync(problem);
+    });
+});
 
-app.MapControllers();
+
+
+
+
 
 app.Run();
 
