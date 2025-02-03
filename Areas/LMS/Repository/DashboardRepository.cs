@@ -36,7 +36,7 @@ namespace LMS.Areas.Admin.Repository
 
             //                 ).Take(5).ToListAsync();
 
-            foreach (var item in await _context.Category.Where(x => x.IsDeleted == false).Take(2).ToListAsync())
+            foreach (var item in await _context.Category.Where(x => x.delete_status == false).Take(2).ToListAsync())
             {
                 var count = new PreferenceCount()
                 {

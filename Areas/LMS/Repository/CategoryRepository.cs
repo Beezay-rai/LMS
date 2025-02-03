@@ -1,8 +1,10 @@
-﻿using LMS.Areas.Admin.Interface;
+﻿using AutoMapper;
+using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
 using LMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Net;
 using System.Security.Claims;
 
@@ -10,12 +12,14 @@ namespace LMS.Areas.Admin.Repository
 {
     public class CategoryRepository : ICategory
     {
+        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string _userId;
 
-        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
+        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor,IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
             _contextAccessor = contextAccessor;
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -26,13 +30,10 @@ namespace LMS.Areas.Admin.Repository
             var response = new ApiResponseModel<List<CategoryModel>>();
             try
             {
-                var data = await _context.Category.Where(x => x.IsDeleted == false).Select(x => new CategoryModel()
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                }).ToListAsync();
+                var data = _mapper.Map<List<CategoryModel>>(await _context.Category.Where(x => x.delete_status == false).ToListAsync());
                 response.Data = data;
                 response.Status = true;
+                response.HttpStatusCode = HttpStatusCode.OK;
                 response.Message = "Available Category List";
                 return response;
             }
@@ -53,7 +54,7 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var data = await _context.Category
-                    .Where(x => x.Id == id && !x.IsDeleted)
+                    .Where(x => x.Id == id && !x.delete_status)
                     .Select(x => new CategoryModel
                     {
                         Id = x.Id,
@@ -92,7 +93,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id );
                 if (category == null)
                 {
                     return new ApiErrorResponseModel<bool>
@@ -103,7 +104,7 @@ namespace LMS.Areas.Admin.Repository
                     };
                 }
 
-                category.IsDeleted = true;
+                category.delete_status = true;
                 _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
@@ -130,18 +131,15 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var category = new Category
-                {
-                    Name = model.Name
-                };
+                var category = _mapper.Map<Category>(model);
 
                 await _context.Category.AddAsync(category);
                 await _context.SaveChangesAsync();
-
-                return new ApiResponseModel<bool>
+                model = _mapper.Map<CategoryModel>(category);
+                return new ApiResponseModel<CategoryModel>
                 {
                     Status = true,
-                    Data = true,
+                    Data = model,
                     Message = "Category added successfully",
                     HttpStatusCode = HttpStatusCode.Created
                 };
@@ -161,7 +159,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.IsDeleted);
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.delete_status);
                 if (category == null)
                 {
                     return new ApiErrorResponseModel<bool>

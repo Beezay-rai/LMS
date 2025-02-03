@@ -37,7 +37,7 @@ namespace LMS.Areas.Admin.Repository
                 {
                     Id = z.Id,
                     CategoryId = z.CategoryId,
-                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.IsDeleted == false).Select(y => y.Name).FirstOrDefault()
+                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.delete_status == false).Select(y => y.Name).FirstOrDefault()
 
                 }).ToList()
             }).ToListAsync();
@@ -66,7 +66,7 @@ namespace LMS.Areas.Admin.Repository
                 {
                     Id = z.Id,
                     CategoryId = z.CategoryId,
-                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.IsDeleted == false).Select(y => y.Name).FirstOrDefault()
+                    CategoryName = _context.Category.Where(y => y.Id == z.CategoryId && y.delete_status == false).Select(y => y.Name).FirstOrDefault()
 
                 }).ToList()
             }).FirstOrDefaultAsync();

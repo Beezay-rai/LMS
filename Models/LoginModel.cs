@@ -13,10 +13,8 @@ namespace LMS.Models
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [Compare("ConfirmPassword")]
         public string Password { get; set; }
-        [Required]
-        public string ConfirmPassword { get; set; }
+    
     }
     public class GETSignUpModel
     {

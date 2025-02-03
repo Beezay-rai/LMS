@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/admin/category")]
+    [Route("api/v1/category")]
     [ApiController]
     [Authorize]
     public class CategoryController : ControllerBase
@@ -41,6 +41,7 @@ namespace LMS.Areas.Admin.Controllers
         public async Task<IActionResult> EditCategory(int categoryId, [FromBody] CategoryModel model)
         {
             var data = await _repo.UpdateCategory(categoryId,model);
+            
             return StatusCode((int)data.HttpStatusCode, data);
         }
 

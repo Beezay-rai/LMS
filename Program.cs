@@ -31,9 +31,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR();
-
+builder.Services.AddAutoMapper(typeof(Program));
 #region Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -82,10 +81,10 @@ builder.Services.AddAuthentication(options =>
 #endregion
 
 
-var openApiFile = Path.Combine(builder.Environment.WebRootPath, "api-doc", "openapi.json");
-var stream = new FileStream(openApiFile, FileMode.Open);
+//var openApiFile = Path.Combine(builder.Environment.WebRootPath, "api-doc", "openapi.json");
+//var stream = new FileStream(openApiFile, FileMode.Open);
 
-OpenApiDocument openApiDocument = new OpenApiStreamReader().Read(stream, out var diagnostic);
+//OpenApiDocument openApiDocument = new OpenApiStreamReader().Read(stream, out var diagnostic);
 
 
 
@@ -182,7 +181,6 @@ app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
-
 
 app.UseCors("LmsReact");
 

@@ -10,7 +10,6 @@ namespace LMS.Utility
             var logger = serviceProvider.GetService<ILogger<ApplicationUser>>();
             try
             {
-                logger.LogInformation("Starting database seeding...");
 
                 var adminCred = new AdminCred();
                 config.GetSection("AdminCred").Bind(adminCred);
@@ -29,6 +28,8 @@ namespace LMS.Utility
                         var existingUser = await userManager.FindByEmailAsync(adminCred.Email);
                         if (existingUser == null)
                         {
+                            logger.LogInformation("Starting database seeding...");
+
                             var AdminUser = new ApplicationUser()
                             {
                                 Email = adminCred.Email,
@@ -53,10 +54,7 @@ namespace LMS.Utility
                                 logger.LogError("Failed to seed Administrator into Database!");
                             }
                         }
-                        else
-                        {
-                            logger.LogInformation("Administrator already exists, skipping seeding.");
-                        }
+                      
                     }
                 }
                 else
@@ -64,11 +62,9 @@ namespace LMS.Utility
                     logger.LogWarning("Admin credentials are missing or incomplete in the configuration.");
                 }
 
-                logger.LogInformation("Completed database seeding...");
             }
             catch (Exception ex)
             {
-                // Log the exception
                 logger.LogError(ex, "An error occurred during database seeding.");
             }
         }

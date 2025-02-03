@@ -13,8 +13,9 @@ namespace LMS.Controllers
         {
             _account = account;
         }
+ 
         [HttpPost]
-        [Route("api/signUp")]
+        [Route("api/v1/users")]
         [AllowAnonymous]
         public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
         {
@@ -24,29 +25,20 @@ namespace LMS.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [Route("api/login")]
+        [Route("api/v1/auth/login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             return Ok(await _account.Login(model));
         }
 
-
         [HttpPost]
         [AllowAnonymous]
-        [Route("api/googleLogin")]
+        [Route("api/v1/auth/google")]
         public async Task<IActionResult> LoginFromGoogle(string token)
         {
             return Ok(await _account.GoogleLogin(token));
-
         }
-        [HttpPost]
-        [AllowAnonymous]
-        [Route("api/googleSignup")]
-        public async Task<IActionResult> SignUpFromGoogle(string token)
-        {
-            return Ok(await _account.GoogleSignUp(token));
 
-        }
 
     }
 }

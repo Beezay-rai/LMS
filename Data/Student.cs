@@ -10,8 +10,7 @@ namespace LMS.Data
         [Required]
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        [Required]
-        public string Gender { get; set; }
+    
         [Required]
         public int CourseId { get; set; }
         [Required]
