@@ -87,7 +87,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<IAccount, AccountRepository>();
 builder.Services.AddScoped<IBook, BookRepository>();
-//builder.Services.AddScoped<IStudent, StudentRepository>();
+builder.Services.AddScoped<IStudent, StudentRepository>();
 builder.Services.AddScoped<ICourse, CourseRepository>();
 //builder.Services.AddScoped<ITransaction, TransactionRepository>();
 builder.Services.AddScoped<ICategory, CategoryRepository>();

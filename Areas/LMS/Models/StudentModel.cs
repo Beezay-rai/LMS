@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace LMS.Areas.Admin.Models
 {
     public class StudentModel
     {
+        [SwaggerIgnore]
         public int Id { get; set; }
         [Required]
         public string first_name { get; set; }

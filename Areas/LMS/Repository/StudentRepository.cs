@@ -38,11 +38,17 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiErrorResponseModel<Exception>();
-                errorResponse.Message = ex.Message;
-                errorResponse.Status = false;
-                errorResponse.Errors = new List<Exception> { ex };
-                errorResponse.HttpStatusCode = HttpStatusCode.InternalServerError;
+                var errorResponse = new ApiErrorResponseModel<ErrorDetailModel>()
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+               
                 return errorResponse;
 
             }
@@ -56,10 +62,10 @@ namespace LMS.Areas.Admin.Repository
                 var data = _mapper.Map<StudentModel>(await _context.Student.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
                 if (data == null)
                 {
-                    return new ApiErrorResponseModel<StudentModel>
+                    return new BaseApiResponseModel
                     {
                         Status = false,
-                        Message = "Student not found",
+                        Message = "Student not found with Id : "+id,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
@@ -72,12 +78,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<Exception>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    Errors = new List<Exception>() { ex },
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -89,10 +98,10 @@ namespace LMS.Areas.Admin.Repository
                 var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == id);
                 if (student == null)
                 {
-                    return new ApiErrorResponseModel<bool>
+                    return new BaseApiResponseModel
                     {
                         Status = false,
-                        Message = "Student not found",
+                        Message = "Student not found with Id : " + id,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
@@ -111,12 +120,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<Exception>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    Errors = new List<Exception>() { ex },
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -141,11 +153,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<bool>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -154,7 +170,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                model.Id = studentId;
+                model.Id =studentId;
                 var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == studentId && !x.delete_status);
                 if (student == null)
                 {
@@ -166,9 +182,8 @@ namespace LMS.Areas.Admin.Repository
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
-                var updatedStudent = _mapper.Map<Student>(model);
 
-                student = updatedStudent;
+                _mapper.Map(model, student);
                 student.updated_date= DateTime.Now;
                 student.updated_by = _userId;
                 _context.Entry(student).State = EntityState.Modified;
@@ -184,11 +199,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<bool>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }

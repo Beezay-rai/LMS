@@ -9,7 +9,7 @@ namespace LMS.Areas.Admin.Interface
         Task<BaseApiResponseModel> GetAllStudent();
         Task<BaseApiResponseModel> GetStudentById(int id);
         Task<BaseApiResponseModel> AddStudent(StudentModel model);
-        Task<BaseApiResponseModel> UpdateStudent(int courseId, StudentModel model);
+        Task<BaseApiResponseModel> UpdateStudent(int studentId, StudentModel model);
         Task<BaseApiResponseModel> DeleteStudent(int id);
     }
 }

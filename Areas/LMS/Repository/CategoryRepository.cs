@@ -38,11 +38,17 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                var errorResponse = new ApiErrorResponseModel<Exception>();
-                errorResponse.Message = ex.Message;
-                errorResponse.Status = false; 
-                errorResponse.Errors = new List<Exception> { ex };
-                errorResponse.HttpStatusCode = HttpStatusCode.InternalServerError;
+                var errorResponse = new ApiErrorResponseModel<ErrorDetailModel>()
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+
                 return errorResponse;
 
             }
@@ -72,12 +78,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<Exception>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    Errors = new List<Exception>() { ex},
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -110,12 +119,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<Exception>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    Errors = new List<Exception>() { ex },
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -139,11 +151,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<bool>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
@@ -179,11 +195,15 @@ namespace LMS.Areas.Admin.Repository
             }
             catch (Exception ex)
             {
-                return new ApiErrorResponseModel<bool>
+                return new ApiErrorResponseModel<ErrorDetailModel>
                 {
                     Status = false,
                     Message = ex.Message,
-                    HttpStatusCode = HttpStatusCode.InternalServerError
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
                 };
             }
         }
