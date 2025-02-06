@@ -4,8 +4,10 @@ using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
+using LMS.Security;
 using LMS.Services;
 using LMS.Utility;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
@@ -23,7 +25,6 @@ using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 
@@ -35,6 +36,8 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program));
+
+
 #region Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -42,51 +45,16 @@ builder.Services.AddAuthentication(options =>
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+.AddScheme<AuthenticationSchemeOptions, BearerAuthHandler>("Bearer", null)
 .AddGoogle(options =>
 {
     options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
     options.ClientSecret = "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";
-})
-.AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:IssuerSigningKey"])),
-        ValidateIssuerSigningKey = true
-    };
-
-    //options.Events = new JwtBearerEvents
-    //{
-    //    OnChallenge = context =>
-    //    {
-    //        context.HandleResponse(); // Suppress the default unauthorized response
-    //        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-    //        context.Response.ContentType = "application/json";
-
-    //        var result = JsonSerializer.Serialize(new
-    //        {
-    //            status = false,
-    //            message = "You are not authorized to access this resource."
-    //        });
-
-    //        return context.Response.WriteAsync(result);
-    //    }
-    //};
 });
+
 #endregion
 
 
-//var openApiFile = Path.Combine(builder.Environment.WebRootPath, "api-doc", "openapi.json");
-//var stream = new FileStream(openApiFile, FileMode.Open);
-
-//OpenApiDocument openApiDocument = new OpenApiStreamReader().Read(stream, out var diagnostic);
 
 
 
@@ -116,11 +84,11 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
-//Register Here
+
 builder.Services.AddScoped<IAccount, AccountRepository>();
 builder.Services.AddScoped<IBook, BookRepository>();
 //builder.Services.AddScoped<IStudent, StudentRepository>();
-//builder.Services.AddScoped<ICourse, CourseRepository>();
+builder.Services.AddScoped<ICourse, CourseRepository>();
 //builder.Services.AddScoped<ITransaction, TransactionRepository>();
 builder.Services.AddScoped<ICategory, CategoryRepository>();
 builder.Services.AddScoped<IDashboard, DashboardRepository>();

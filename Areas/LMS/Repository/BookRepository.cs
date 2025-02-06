@@ -33,9 +33,15 @@ namespace LMS.Areas.Admin.Repository
                 var books = await _context.Book
                     .Where(x => !x.delete_status)
                     .ToListAsync();
+               
 
                 var data = _mapper.Map<List<BookModel>>(books);
 
+                data.ForEach(data => 
+                {
+                    data.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == data.Id).Select(x => x.CategoryId).ToList();
+                
+                });
                 return new ApiResponseModel<List<BookModel>>
                 {
                     Status = true,
@@ -77,7 +83,7 @@ namespace LMS.Areas.Admin.Repository
                 }
 
                 var data = _mapper.Map<BookModel>(book);
-
+                data.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == data.Id).Select(x => x.CategoryId).ToList();
                 return new ApiResponseModel<BookModel>
                 {
                     Status = true,

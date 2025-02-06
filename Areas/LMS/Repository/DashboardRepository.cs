@@ -23,7 +23,7 @@ namespace LMS.Areas.Admin.Repository
             {
                 BookCount = await _context.Book.Where(x => x.delete_status == false).CountAsync(),
                 IssuedCount = await _context.Transaction.Where(x => x.Deleted == false).CountAsync(),
-                StudentCount = await _context.Student.Where(x => x.Deleted == false).CountAsync(),
+                //StudentCount = await _context.Student.Where(x => x.Deleted == false).CountAsync(),
             };
 
             //var test = await (from bk in _context.Book

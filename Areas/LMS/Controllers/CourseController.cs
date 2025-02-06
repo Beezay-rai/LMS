@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/admin/course")]
+    [Route("api/v1/course")]
     [ApiController]
     [Authorize]
     public class CourseController : ControllerBase

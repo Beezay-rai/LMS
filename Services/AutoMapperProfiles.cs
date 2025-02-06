@@ -10,6 +10,7 @@ namespace LMS.Services
         {
             CreateMap<Category, CategoryModel>().ReverseMap();
             CreateMap<Book, BookModel>().ReverseMap();
+            CreateMap<Course, CourseModel>().ReverseMap();
 
         }
     }

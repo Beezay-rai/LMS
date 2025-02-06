@@ -26,6 +26,7 @@ namespace LMS.Data
         public DateTime updated_date { get; set; }
         public string deleted_by { get; set; }
         public DateTime deleted_date { get; set; }
+
     }
 
 

@@ -2,12 +2,12 @@
 
 namespace LMS.Data
 {
-    public class Course
+    public sealed class Course
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        public string CourseName { get; set; }
+        public string Name { get; set; }
         [Required]
         public int Semester { get; set; }
         [Required]

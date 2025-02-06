@@ -2,38 +2,20 @@
 
 namespace LMS.Areas.Admin.Models
 {
-    public class StudentGETModel
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int GenderId { get; set; }
-        public string GenderName { get; set; }
-        public int CourseId { get; set; }
-        public string CourseName { get; set; }
-        public string EmailAddress { get; set; }
-
-        public DateTime BirthDate { get; set; }
-
-        public string PhoneNumber { get; set; }
-
-    }
     public class StudentModel
     {
         public int Id { get; set; }
         [Required]
-        public string FirstName { get; set; }
-        public string? LastName { get; set; }
+        public string first_name { get; set; }
+        public string last_name { get; set; }
         [Required]
-        public int GenderId { get; set; }
+        public int course_id { get; set; }
         [Required]
-        public int CourseId { get; set; }
+        public string email_address { get; set; }
         [Required]
-        public string EmailAddress { get; set; }
-        [Required]
-        public string PhoneNumber { get; set; }
+        public string phone_number { get; set; }
         [DataType(DataType.Date)]
-        public DateTime BirthDate { get; set; }
+        public DateTime dob { get; set; }
 
 
 
