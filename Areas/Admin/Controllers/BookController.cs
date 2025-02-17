@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/book")]
+    [Route("api/v1/books")]
     [ApiController]
     [Authorize]
     public class BookController : ControllerBase
     {
-        private readonly IBook _Book;
-        public BookController(IBook Book)
+        private readonly IBookRepository _Book;
+        public BookController(IBookRepository Book)
         {
             _Book = Book;
         }

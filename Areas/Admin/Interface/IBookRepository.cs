@@ -3,7 +3,7 @@ using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
-    public interface IBook
+    public interface IBookRepository
     {
 
         Task<BaseApiResponseModel> GetAllBook();

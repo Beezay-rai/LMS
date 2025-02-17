@@ -3,9 +3,8 @@ using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
-    public interface IStudent
+    public interface IStudentRepository
     {
-
         Task<BaseApiResponseModel> GetAllStudent();
         Task<BaseApiResponseModel> GetStudentById(int id);
         Task<BaseApiResponseModel> AddStudent(StudentModel model);

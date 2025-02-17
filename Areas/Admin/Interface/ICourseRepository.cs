@@ -3,7 +3,7 @@ using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
-    public interface ICourse
+    public interface ICourseRepository
     {
 
         Task<BaseApiResponseModel> GetAllCourse();

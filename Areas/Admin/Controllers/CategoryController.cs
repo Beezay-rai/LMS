@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/category")]
+    [Route("api/v1/categories")]
     [ApiController]
     [Authorize]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategory _repo;
-        public CategoryController(ICategory Category)
+        private readonly ICategoryRepository _repo;
+        public CategoryController(ICategoryRepository Category)
         {
             _repo = Category;
         }

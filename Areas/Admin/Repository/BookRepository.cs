@@ -9,7 +9,7 @@ using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
-    public class BookRepository : IBook
+    public class BookRepository : IBookRepository
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;

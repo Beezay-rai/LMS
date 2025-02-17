@@ -3,9 +3,8 @@ using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
-    public interface ICategory
+    public interface ICategoryRepository
     {
-
         Task<BaseApiResponseModel> GetAllCategory();
         Task<BaseApiResponseModel> GetCategoryById(int id);
         Task<BaseApiResponseModel> AddCategory(CategoryModel model);

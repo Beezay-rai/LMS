@@ -9,14 +9,14 @@ using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
-    public class StudentRepository : IStudent
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string _userId;
 
-        public StudentRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
+        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
         {
             _mapper = mapper;
             _context = context;
@@ -24,16 +24,16 @@ namespace LMS.Areas.Admin.Repository
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
 
-        public async Task<BaseApiResponseModel> GetAllStudent()
+        public async Task<BaseApiResponseModel> GetAllCategory()
         {
-            var response = new ApiResponseModel<List<StudentModel>>();
+            var response = new ApiResponseModel<List<CategoryModel>>();
             try
             {
-                var data = _mapper.Map<List<StudentModel>>(await _context.Student.Where(x => x.delete_status == false).ToListAsync());
+                var data = _mapper.Map<List<CategoryModel>>(await _context.Category.Where(x => x.delete_status == false).ToListAsync());
                 response.Data = data;
                 response.Status = true;
                 response.HttpStatusCode = HttpStatusCode.OK;
-                response.Message = "Available Student List";
+                response.Message = "Available Category List";
                 return response;
             }
             catch (Exception ex)
@@ -48,31 +48,31 @@ namespace LMS.Areas.Admin.Repository
                          new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
                     },
                 };
-               
+
                 return errorResponse;
 
             }
 
         }
-        public async Task<BaseApiResponseModel> GetStudentById(int id)
+        public async Task<BaseApiResponseModel> GetCategoryById(int id)
         {
-            var response = new ApiResponseModel<StudentModel>();
+            var response = new ApiResponseModel<CategoryModel>();
             try
             {
-                var data = _mapper.Map<StudentModel>(await _context.Student.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
+                var data = _mapper.Map<CategoryModel>(await _context.Category.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
                 if (data == null)
                 {
-                    return new BaseApiResponseModel
+                    return new ApiErrorResponseModel<CategoryModel>
                     {
                         Status = false,
-                        Message = "Student not found with Id : "+id,
+                        Message = "Category not found",
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
 
                 response.Data = data;
                 response.Status = true;
-                response.Message = "Student details retrieved successfully";
+                response.Message = "Category details retrieved successfully";
                 response.HttpStatusCode = HttpStatusCode.OK;
                 return response;
             }
@@ -91,30 +91,29 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-        public async Task<BaseApiResponseModel> DeleteStudent(int id)
+        public async Task<BaseApiResponseModel> DeleteCategory(int id)
         {
             try
             {
-                var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == id);
-                if (student == null)
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
+                if (category == null)
                 {
-                    return new BaseApiResponseModel
+                    return new ApiErrorResponseModel<bool>
                     {
                         Status = false,
-                        Message = "Student not found with Id : " + id,
+                        Message = "Category not found",
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
 
-                student.delete_status = true;
-                student.deleted_date = DateTime.UtcNow;
-                _context.Entry(student).State = EntityState.Modified;
+                category.delete_status = true;
+                _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return new BaseApiResponseModel
                 {
                     Status = true,
-                    Message = "Student deleted successfully",
+                    Message = "Category deleted successfully",
                     HttpStatusCode = HttpStatusCode.OK
                 };
             }
@@ -133,21 +132,20 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-        public async Task<BaseApiResponseModel> AddStudent(StudentModel model)
+        public async Task<BaseApiResponseModel> AddCategory(CategoryModel model)
         {
             try
             {
-                var student = _mapper.Map<Student>(model);
-                student.created_by = _userId;
-                student.created_date = DateTime.UtcNow; 
-                await _context.Student.AddAsync(student);
+                var category = _mapper.Map<Category>(model);
+
+                await _context.Category.AddAsync(category);
                 await _context.SaveChangesAsync();
-                model = _mapper.Map<StudentModel>(student);
-                return new ApiResponseModel<StudentModel>
+                model = _mapper.Map<CategoryModel>(category);
+                return new ApiResponseModel<CategoryModel>
                 {
                     Status = true,
                     Data = model,
-                    Message = "Student added successfully",
+                    Message = "Category added successfully",
                     HttpStatusCode = HttpStatusCode.Created
                 };
             }
@@ -166,34 +164,32 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-        public async Task<BaseApiResponseModel> UpdateStudent(int studentId, StudentModel model)
+        public async Task<BaseApiResponseModel> UpdateCategory(int categoryId, CategoryModel model)
         {
             try
             {
-                model.Id =studentId;
-                var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == studentId && !x.delete_status);
-                if (student == null)
+                model.Id = categoryId;
+                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.delete_status);
+                if (category == null)
                 {
-                    return new ApiResponseModel<StudentModel>
+                    return new ApiResponseModel<CategoryModel>
                     {
                         Status = false,
-                        Message = "Student not found",
+                        Message = "Category not found",
                         Data = model,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
 
-                _mapper.Map(model, student);
-                student.updated_date= DateTime.Now;
-                student.updated_by = _userId;
-                _context.Entry(student).State = EntityState.Modified;
+                category.Name = model.Name;
+                _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
-                return new ApiResponseModel<StudentModel>
+                return new ApiResponseModel<CategoryModel>
                 {
                     Status = true,
                     Data = model,
-                    Message = "Student updated successfully",
+                    Message = "Category updated successfully",
                     HttpStatusCode = HttpStatusCode.OK
                 };
             }

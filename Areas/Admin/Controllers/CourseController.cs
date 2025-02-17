@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/course")]
+    [Route("api/v1/courses")]
     [ApiController]
     [Authorize]
     public class CourseController : ControllerBase
     {
-        private readonly ICourse _Course;
-        public CourseController(ICourse Course)
+        private readonly ICourseRepository _Course;
+        public CourseController(ICourseRepository Course)
         {
             _Course = Course;
         }
