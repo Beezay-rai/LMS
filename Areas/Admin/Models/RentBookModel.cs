@@ -6,7 +6,6 @@ namespace LMS.Areas.Admin.Models
     {
         [SwaggerIgnore]
         public int Id { get; set; }
-        [SwaggerIgnore]
         public string student_id { get;set; }
 
         public List<RentBookDetailModel> rent_book { get; set; }

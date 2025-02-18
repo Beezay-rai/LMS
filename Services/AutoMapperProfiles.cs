@@ -12,6 +12,8 @@ namespace LMS.Services
             CreateMap<Book, BookModel>().ReverseMap();
             CreateMap<Course, CourseModel>().ReverseMap();
             CreateMap<Student, StudentModel>().ReverseMap();
+            CreateMap<RentBook, RentBookModel>().ReverseMap();
+            CreateMap<RentBookDetail, RentBookDetailModel>().ReverseMap();
 
         }
     }

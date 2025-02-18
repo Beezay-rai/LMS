@@ -1,6 +1,5 @@
 ﻿using LMS.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
@@ -10,7 +9,7 @@ namespace LMS.Areas.Admin.Controllers
     [ApiController]
     public class ReturnBookController : ControllerBase
     {
-        [HttpGet("{studentId}")]
+        [HttpGet()]
         public IActionResult Index()
         {
             return Ok();
@@ -23,8 +22,5 @@ namespace LMS.Areas.Admin.Controllers
 
     }
 
-    public class ReturnBookModel
-    {
-        public int[] book_id { get; set; }
-    }
+   
 }

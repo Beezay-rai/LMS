@@ -89,8 +89,8 @@ builder.Services.AddScoped<IAccount, AccountRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-//builder.Services.AddScoped<ITransaction, TransactionRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IRentBookRepository, RentBookRepository>();
 builder.Services.AddScoped<IDashboard, DashboardRepository>();
 builder.Services.AddScoped<IUtility, Utilities>();
 
