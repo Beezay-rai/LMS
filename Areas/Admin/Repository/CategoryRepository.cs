@@ -107,7 +107,7 @@ namespace LMS.Areas.Admin.Repository
                 }
 
                 category.delete_status = true;
-                _context.Entry(category).State = EntityState.Modified;
+               
                 await _context.SaveChangesAsync();
 
                 return new BaseApiResponseModel
@@ -182,7 +182,6 @@ namespace LMS.Areas.Admin.Repository
                 }
 
                 category.Name = model.Name;
-                _context.Entry(category).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return new ApiResponseModel<CategoryModel>

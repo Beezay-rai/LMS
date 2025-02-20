@@ -175,7 +175,6 @@ namespace LMS.Areas.Admin.Repository
                 course.UpdatedBy = _userId;
                 course.UpdatedDate = DateTime.UtcNow;
 
-                _context.Entry(course).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return new ApiResponseModel<CourseModel>

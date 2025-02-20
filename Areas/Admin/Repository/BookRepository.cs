@@ -184,7 +184,6 @@ namespace LMS.Areas.Admin.Repository
                 book.updated_by = _userId;
                 book.updated_date = DateTime.UtcNow;
 
-                _context.Entry(book).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
 
                 return new ApiResponseModel<BookModel>

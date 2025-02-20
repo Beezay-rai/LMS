@@ -32,8 +32,7 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddSignalR();
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -118,7 +117,7 @@ builder.Services.AddCors(option =>
 {
     option.AddPolicy("LmsReact", policy =>
     {
-        policy.WithOrigins(new string[] { "http://localhost:5002" })
+        policy.WithOrigins(new string[] { "http://localhost:3000" })
         .AllowAnyMethod()
         .AllowCredentials()
         .AllowAnyHeader();
