@@ -11,5 +11,8 @@ namespace LMS.Areas.Admin.Interface
         Task<BaseApiResponseModel> AddRentBook(RentBookModel model);
         Task<BaseApiResponseModel> UpdateRentBook(int RentBook_id, RentBookModel model);
         Task<BaseApiResponseModel> DeleteRentBook(int id);
+
+
+        Task<BaseApiResponseModel> ReturnRentBook(int rent_id,int[] book_id);
     }
 }

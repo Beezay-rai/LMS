@@ -1,23 +1,34 @@
-﻿using LMS.Areas.Admin.Models;
+﻿using LMS.Areas.Admin.Interface;
+using LMS.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/return-book")]
+    [Route("api/v1/return-book/{rentBookId}")]
     [Authorize]
     [ApiController]
     public class ReturnBookController : ControllerBase
     {
-        [HttpGet()]
-        public IActionResult Index()
+        private readonly IRentBookRepository _repo;
+
+        public ReturnBookController(IRentBookRepository repo)
         {
-            return Ok();
+            _repo = repo;
         }
-        [HttpPost("{studentId}")]
-        public IActionResult ReturnBook(ReturnBookModel model )
+
+
+        [HttpPost]
+        public async Task<IActionResult> ReturnBook(int rentBookId, [FromBody] ReturnBookModel model)
         {
-            return Ok();
+            var data = await _repo.ReturnRentBook(rentBookId, model.book_id);
+            return StatusCode((int)data.HttpStatusCode, data);
+        }
+
+
+        public class ReturnBookModel
+        {
+            public int[] book_id { get; set; }
         }
 
     }

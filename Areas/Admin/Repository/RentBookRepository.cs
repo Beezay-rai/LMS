@@ -30,11 +30,11 @@ namespace LMS.Areas.Admin.Repository
             try
             {
                 var data = _mapper.Map<List<RentBookModel>>(await _context.RentBook.Where(x => x.deleted == false).ToListAsync());
-                if(data != null)
+                if (data != null)
                 {
-                    foreach(var item in data)
+                    foreach (var item in data)
                     {
-                        var rentBookDetail =_mapper.Map<List<RentBookDetailModel>>( await _context.RentBookDetail.Where(x => x.rent_book_id == item.Id ).ToListAsync());
+                        var rentBookDetail = _mapper.Map<List<RentBookDetailModel>>(await _context.RentBookDetail.Where(x => x.rent_book_id == item.Id).ToListAsync());
                         item.rent_book = rentBookDetail;
                     }
 
@@ -158,14 +158,14 @@ namespace LMS.Areas.Admin.Repository
                     var rentBookDetails = _mapper.Map<List<RentBookDetail>>(model.rent_book);
                     foreach (var detail in rentBookDetails)
                     {
-                        detail.rent_book_id = RentBook.id; 
+                        detail.rent_book_id = RentBook.id;
                     }
                     await _context.RentBookDetail.AddRangeAsync(rentBookDetails);
                     await _context.SaveChangesAsync();
 
 
                     model = _mapper.Map<RentBookModel>(RentBook);
-                    model.rent_book = _mapper.Map<List<RentBookDetailModel>>( rentBookDetails);
+                    model.rent_book = _mapper.Map<List<RentBookDetailModel>>(rentBookDetails);
                     await tran.CommitAsync();
                     return new ApiResponseModel<RentBookModel>
                     {
@@ -190,12 +190,12 @@ namespace LMS.Areas.Admin.Repository
                     };
                 }
             }
-        
+
         }
 
         public async Task<BaseApiResponseModel> UpdateRentBook(int RentBookId, RentBookModel model)
         {
-            using(var tran = _context.Database.BeginTransaction())
+            using (var tran = _context.Database.BeginTransaction())
             {
                 try
                 {
@@ -228,7 +228,7 @@ namespace LMS.Areas.Admin.Repository
                     }
 
                     await _context.RentBookDetail.AddRangeAsync(newRentBookDetails);
-                    await _context.SaveChangesAsync(); 
+                    await _context.SaveChangesAsync();
 
                     model = _mapper.Map<RentBookModel>(RentBook);
                     model.rent_book = _mapper.Map<List<RentBookDetailModel>>(newRentBookDetails);
@@ -260,5 +260,97 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
+        public async Task<BaseApiResponseModel> ReturnRentBook(int rent_book_id, int[] book_id)
+        {
+
+            using (var tran = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    if (!book_id.Any())
+                    {
+                        return new ApiResponseModel<int[]>()
+                        {
+                            HttpStatusCode = HttpStatusCode.BadRequest,
+                            Status = false,
+                            Message = "Retrun book List is required !",
+                            Data = book_id
+                        };
+                    }
+                    var rentBookDetail = await _context.RentBookDetail.Where(x => x.rent_book_id == rent_book_id).ToListAsync();
+
+                    if (rentBookDetail.Any())
+                    {
+                        var check = book_id.Except(rentBookDetail.Select(x => x.book_id).ToArray()).ToArray();
+                        if (check.Any())
+                        {
+                            return new ApiResponseModel<int[]>()
+                            {
+                                HttpStatusCode = HttpStatusCode.BadRequest,
+                                Status = false,
+                                Message = "Rent Book Not Found with specific Id!",
+                                Data = check
+                            };
+                        }
+                        else
+                        {
+                            foreach (var item in book_id)
+                            {
+                                var data = await _context.RentBookDetail
+                                    .Where(x => x.book_id == item && x.rent_book_id == rent_book_id)
+                                    .ToListAsync();
+
+                                if (data.Any())
+                                {
+                                    foreach (var rentBook in data)
+                                    {
+                                        rentBook.return_status = true;
+                                    }
+                                }
+                            }
+
+                            await _context.SaveChangesAsync();
+
+                            await tran.CommitAsync();
+                            return new ApiResponseModel<int[]>
+                            {
+                                Status = true,
+                                Data = book_id,
+                                Message = "Book Return Status updated successfully",
+                                HttpStatusCode = HttpStatusCode.OK
+                            };
+                        }
+                    }
+
+
+                    else
+                    {
+                        return new ApiResponseModel<int[]>()
+                        {
+                            HttpStatusCode = HttpStatusCode.BadRequest,
+                            Data = book_id,
+                            Status = false,
+                            Message = "Rent Book Not Found With Id : " + rent_book_id
+                        };
+                    }
+                }
+                catch (Exception ex)
+                {
+
+
+                    await tran.RollbackAsync();
+                    return new ApiErrorResponseModel<ErrorDetailModel>
+                    {
+                        Status = false,
+                        Message = ex.Message,
+                        HttpStatusCode = HttpStatusCode.InternalServerError,
+                        Errors = new List<ErrorDetailModel>
+                        {
+                             new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                        },
+                    };
+                }
+            }
+        }
     }
 }

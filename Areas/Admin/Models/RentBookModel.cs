@@ -15,5 +15,7 @@ namespace LMS.Areas.Admin.Models
     {
         public int book_id { get; set; }
         public DateTime return_date { get; set; }
+        public bool return_status { get; set; }
     }
+  
 }
