@@ -3,7 +3,7 @@ name: Build, Publish, and Deploy to MonsterASP.NET
 on:
   push:
     branches:
-      - Tester
+      - master
 
 jobs:
   build_and_deploy:
