@@ -1,0 +1,1193 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "LMS API",
+    "version": "1.0",
+    "description": "This API powers the Learning Management System (LMS), handling everything from user authentication and book management to course, dashboard, rental/return, and student operations."
+  },
+  "servers": [
+    {
+      "url": "https://api.example.com",
+      "description": "Production server"
+    },
+    {
+      "url": "https://staging.api.example.com",
+      "description": "Staging server"
+    }
+  ],
+  "paths": {
+    "/api/v1/users": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "summary": "User Registration",
+        "description": "Register a new user in the LMS.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SignUpModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User successfully registered."
+          },
+          "400": {
+            "description": "Bad Request – Invalid input."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "summary": "User Login",
+        "description": "Authenticate a user and return a JWT token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User authenticated successfully."
+          },
+          "401": {
+            "description": "Unauthorized – Invalid credentials."
+          }
+        }
+      }
+    },
+    "/api/v1/auth/google": {
+      "post": {
+        "tags": [
+          "Authenticate"
+        ],
+        "summary": "Google Authentication",
+        "description": "Authenticate a user using a Google token.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Google authentication token."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User authenticated via Google."
+          },
+          "400": {
+            "description": "Bad Request – Invalid token."
+          }
+        }
+      }
+    },
+    "/api/v1/books": {
+      "get": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Get All Books",
+        "description": "Retrieve a list of all books in the LMS.",
+        "responses": {
+          "200": {
+            "description": "A list of books."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Add a New Book",
+        "description": "Create a new book record in the LMS.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book successfully added."
+          },
+          "400": {
+            "description": "Bad Request – Invalid book data."
+          }
+        }
+      }
+    },
+    "/api/v1/books/{bookId}": {
+      "get": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Get Book Details",
+        "description": "Retrieve details of a specific book by its ID.",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the book."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book details."
+          },
+          "404": {
+            "description": "Book not found."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Update Book",
+        "description": "Update details of an existing book.",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the book to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Book updated successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid update data."
+          },
+          "404": {
+            "description": "Book not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Book"
+        ],
+        "summary": "Delete Book",
+        "description": "Remove a book from the LMS.",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the book to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book deleted successfully."
+          },
+          "404": {
+            "description": "Book not found."
+          }
+        }
+      }
+    },
+    "/api/v1/categories": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Get All Categories",
+        "description": "Retrieve a list of all book categories.",
+        "responses": {
+          "200": {
+            "description": "A list of categories."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Create Category",
+        "description": "Add a new book category.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Category created successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid category data."
+          }
+        }
+      }
+    },
+    "/api/v1/categories/{categoryId}": {
+      "get": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Get Category Details",
+        "description": "Retrieve details of a specific category.",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the category."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category details."
+          },
+          "404": {
+            "description": "Category not found."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Update Category",
+        "description": "Update an existing category.",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the category to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Category updated successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid data."
+          },
+          "404": {
+            "description": "Category not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Category"
+        ],
+        "summary": "Delete Category",
+        "description": "Remove a category from the LMS.",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the category to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category deleted successfully."
+          },
+          "404": {
+            "description": "Category not found."
+          }
+        }
+      }
+    },
+    "/api/v1/courses": {
+      "get": {
+        "tags": [
+          "Course"
+        ],
+        "summary": "Get All Courses",
+        "description": "Retrieve a list of all courses.",
+        "responses": {
+          "200": {
+            "description": "A list of courses."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Course"
+        ],
+        "summary": "Create Course",
+        "description": "Add a new course.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Course created successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid course data."
+          }
+        }
+      }
+    },
+    "/api/v1/courses/{courseId}": {
+      "get": {
+        "tags": [
+          "Course"
+        ],
+        "summary": "Get Course Details",
+        "description": "Retrieve details of a specific course.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the course."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course details."
+          },
+          "404": {
+            "description": "Course not found."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Course"
+        ],
+        "summary": "Update Course",
+        "description": "Update an existing course.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the course to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CourseModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Course updated successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid course data."
+          },
+          "404": {
+            "description": "Course not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Course"
+        ],
+        "summary": "Delete Course",
+        "description": "Remove a course from the LMS.",
+        "parameters": [
+          {
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the course to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Course deleted successfully."
+          },
+          "404": {
+            "description": "Course not found."
+          }
+        }
+      }
+    },
+    "/api/Dashboard/GetDashboardData": {
+      "get": {
+        "tags": [
+          "Dashboard"
+        ],
+        "summary": "Get Dashboard Data",
+        "description": "Retrieve dashboard data for LMS analytics.",
+        "responses": {
+          "200": {
+            "description": "Dashboard data retrieved successfully."
+          }
+        }
+      }
+    },
+    "/api/v1/rent-book": {
+      "get": {
+        "tags": [
+          "RentBook"
+        ],
+        "summary": "Get Rent Book Records",
+        "description": "Retrieve all book rental records.",
+        "responses": {
+          "200": {
+            "description": "A list of rental records."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RentBook"
+        ],
+        "summary": "Create Rent Book Record",
+        "description": "Record a new book rental.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentBookModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentBookModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Book rental recorded successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid rental data."
+          }
+        }
+      }
+    },
+    "/api/v1/rent-book/{rentBookId}": {
+      "get": {
+        "tags": [
+          "RentBook"
+        ],
+        "summary": "Get Rent Book Record",
+        "description": "Retrieve details of a specific rental record.",
+        "parameters": [
+          {
+            "name": "rentBookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the rental record."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rental record details."
+          },
+          "404": {
+            "description": "Rental record not found."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "RentBook"
+        ],
+        "summary": "Update Rent Book Record",
+        "description": "Update an existing rental record.",
+        "parameters": [
+          {
+            "name": "rentBookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the rental record to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentBookModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/RentBookModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Rental record updated successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid data."
+          },
+          "404": {
+            "description": "Rental record not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "RentBook"
+        ],
+        "summary": "Delete Rent Book Record",
+        "description": "Delete a rental record.",
+        "parameters": [
+          {
+            "name": "rentBookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the rental record to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rental record deleted successfully."
+          },
+          "404": {
+            "description": "Rental record not found."
+          }
+        }
+      }
+    },
+    "/api/v1/return-book/{rentBookId}": {
+      "get": {
+        "tags": [
+          "ReturnBook"
+        ],
+        "summary": "Get Return Book Record",
+        "description": "Retrieve details of a specific return record.",
+        "parameters": [
+          {
+            "name": "rentBookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the rental record associated with the return."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return record details."
+          },
+          "404": {
+            "description": "Return record not found."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "ReturnBook"
+        ],
+        "summary": "Return Books",
+        "description": "Process the return of one or more rented books.",
+        "parameters": [
+          {
+            "name": "rentBookId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the rental record associated with the return."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnBookModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnBookModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Books returned successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid return data."
+          }
+        }
+      }
+    },
+    "/api/v1/students": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Get All Students",
+        "description": "Retrieve a list of all students.",
+        "responses": {
+          "200": {
+            "description": "A list of students."
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Create Student",
+        "description": "Register a new student.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid student data."
+          }
+        }
+      }
+    },
+    "/api/v1/students/{studentId}": {
+      "get": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Get Student Details",
+        "description": "Retrieve details of a specific student.",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the student."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student details."
+          },
+          "404": {
+            "description": "Student not found."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Update Student",
+        "description": "Update an existing student's details.",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the student to update."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student updated successfully."
+          },
+          "400": {
+            "description": "Bad Request – Invalid data."
+          },
+          "404": {
+            "description": "Student not found."
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Student"
+        ],
+        "summary": "Delete Student",
+        "description": "Remove a student from the LMS.",
+        "parameters": [
+          {
+            "name": "studentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "ID of the student to delete."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student deleted successfully."
+          },
+          "404": {
+            "description": "Student not found."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "BookModel": {
+        "type": "object",
+        "required": [
+          "author_name",
+          "book_name",
+          "isbn",
+          "publication_date",
+          "quantity"
+        ],
+        "properties": {
+          "book_name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the book."
+          },
+          "isbn": {
+            "type": "string",
+            "minLength": 1,
+            "description": "International Standard Book Number."
+          },
+          "author_name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Author of the book."
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Available quantity of the book."
+          },
+          "publication_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Publication date of the book."
+          },
+          "book_categories": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nullable": true,
+            "description": "IDs of categories the book belongs to."
+          }
+        },
+        "additionalProperties": false
+      },
+      "CategoryModel": {
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Category name."
+          }
+        },
+        "additionalProperties": false
+      },
+      "CourseModel": {
+        "type": "object",
+        "required": [
+          "credits",
+          "name",
+          "semester"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Name of the course."
+          },
+          "semester": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Semester number."
+          },
+          "credits": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Credit value of the course."
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "description": "Description of the course."
+          }
+        },
+        "additionalProperties": false
+      },
+      "LoginModel": {
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 1,
+            "format": "email",
+            "description": "User's email address."
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "description": "User's password."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentBookDetailModel": {
+        "type": "object",
+        "properties": {
+          "book_id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID of the rented book."
+          },
+          "return_date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Expected return date."
+          }
+        },
+        "additionalProperties": false
+      },
+      "RentBookModel": {
+        "type": "object",
+        "required": [
+          "student_id",
+          "rent_book"
+        ],
+        "properties": {
+          "student_id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID of the student renting the book."
+          },
+          "rent_book": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RentBookDetailModel"
+            },
+            "description": "List of books being rented."
+          }
+        },
+        "additionalProperties": false
+      },
+      "ReturnBookModel": {
+        "type": "object",
+        "required": [
+          "student_id",
+          "book_ids"
+        ],
+        "properties": {
+          "student_id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID of the student returning the book(s)."
+          },
+          "book_ids": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "List of book IDs to return."
+          }
+        },
+        "additionalProperties": false
+      },
+      "SignUpModel": {
+        "type": "object",
+        "required": [
+          "email",
+          "firstName",
+          "password",
+          "role"
+        ],
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "minLength": 1,
+            "description": "User's first name."
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true,
+            "description": "User's last name."
+          },
+          "role": {
+            "type": "string",
+            "minLength": 1,
+            "description": "User's role."
+          },
+          "email": {
+            "type": "string",
+            "minLength": 1,
+            "format": "email",
+            "description": "User's email address."
+          },
+          "password": {
+            "type": "string",
+            "minLength": 1,
+            "description": "User's password."
+          }
+        },
+        "additionalProperties": false
+      },
+      "StudentModel": {
+        "type": "object",
+        "required": [
+          "course_id",
+          "email_address",
+          "first_name",
+          "phone_number"
+        ],
+        "properties": {
+          "first_name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Student's first name."
+          },
+          "last_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Student's last name."
+          },
+          "course_id": {
+            "type": "integer",
+            "format": "int32",
+            "description": "ID of the course the student is enrolled in."
+          },
+          "email_address": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Student's email address."
+          },
+          "phone_number": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Student's phone number."
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "description": "Student's date of birth."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "Bearer token for JWT authentication.",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": []
+    }
+  ]
+}

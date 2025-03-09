@@ -4,21 +4,20 @@ using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
-
+using LMS.Security;
+using LMS.Services;
 using LMS.Utility;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using System.Text;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
 
@@ -26,54 +25,28 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddSignalR();
+builder.Services.AddAutoMapper(typeof(Program));
 
 
+#region Authentication
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
 })
+.AddScheme<AuthenticationSchemeOptions, BearerAuthHandler>("Bearer", null)
 .AddGoogle(options =>
 {
     options.ClientId = "826437202548-fj078fp80th3bchs3jtn3nve1q2pcu7d.apps.googleusercontent.com";
     options.ClientSecret = "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";
-})
-.AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:IssuerSigningKey"])),
-        ValidateIssuerSigningKey = true
-    };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnChallenge = context =>
-        {
-            context.HandleResponse(); // Suppress the default unauthorized response
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            context.Response.ContentType = "application/json";
-
-            var result = JsonSerializer.Serialize(new
-            {
-                status = false,
-                message = "You are not authorized to access this resource."
-            });
-
-            return context.Response.WriteAsync(result);
-        }
-    };
 });
+
+#endregion
+
+
 
 
 
@@ -81,7 +54,7 @@ builder.Services.AddSwaggerGen(options =>
 {
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Scheme = "Bearer",
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
         Name = "Authorization",
@@ -104,22 +77,58 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-//Register Here
-builder.Services.AddTransient<IAccount, AccountRepository>();
-builder.Services.AddTransient<IBook, BookRepository>();
-builder.Services.AddTransient<IStudent, StudentRepository>();
-builder.Services.AddTransient<ICourse, CourseRepository>();
-builder.Services.AddTransient<ITransaction, TransactionRepository>();
-builder.Services.AddTransient<ICategory, CategoryRepository>();
-builder.Services.AddTransient<IDashboard, DashboardRepository>();
-builder.Services.AddTransient<IUtility, Utilities>();
+builder.Services.AddScoped<IAccount, AccountRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IRentBookRepository, RentBookRepository>();
 
 
+builder.Services.AddScoped<IDashboard, DashboardRepository>();
+builder.Services.AddScoped<IUtility, Utilities>();
+
+
+//builder.Services.AddOpenTelemetry()
+//    .ConfigureResource(resource =>
+//{
+//    resource.AddService("LMS");
+//})
+//    .WithMetrics(metric =>
+//    {
+//        metric.AddAspNetCoreInstrumentation();
+//        metric.AddHttpClientInstrumentation();
+//        metric.AddOtlpExporter();
+//    })
+//    .WithTracing(tracing =>
+//    {
+//        tracing.AddAspNetCoreInstrumentation();
+//        tracing.AddHttpClientInstrumentation();
+//        tracing.AddOtlpExporter();
+
+//    });
+
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy("LmsReact", policy =>
+    {
+        policy.WithOrigins(new string[] { "http://localhost:3000" })
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .AllowAnyHeader();
+    });
+});
+
+
+#region Logging
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
+builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
+//builder.Logging.AddOpenTelemetry(logging => { logging.AddOtlpExporter(); });
+#endregion
 
 
 var app = builder.Build();
@@ -130,92 +139,73 @@ SeedDatabase.Execute(app.Services.GetRequiredService<IConfiguration>(), app.Serv
 logger.Information("LMS App Running !");
 
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        context.Response.ContentType = "application/json";
+
+        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+        if (exceptionHandlerFeature == null) return;
+
+        var exception = exceptionHandlerFeature.Error;
+        var env = context.RequestServices.GetRequiredService<IWebHostEnvironment>();
+
+        var problem = new ProblemDetails()
+        {
+            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
+            Status = 500,
+            Title = "Internal Server Error",
+        };
+        if (env.IsDevelopment())
+        {
+            problem.Instance = context.Request.Path;
+            problem.Detail = exception.Message;
+        }
 
 
+        await context.Response.WriteAsJsonAsync(problem);
+    });
+});
+
+
+app.MapHub<SignalrChatHub>("/chatHub");
+
+app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseRouting();
-app.UseCors(options => options
-.AllowAnyOrigin()
-.AllowAnyHeader()
-.AllowAnyMethod()
-);
+
+app.UseCors("LmsReact");
 
 app.UseAuthentication();
 
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapFallback(async context =>
+    {
+        context.Response.StatusCode = 404;
+        var problem = new ProblemDetails()
+        {
+            Title = "Not Found",
+            Detail = "Requested Service Not Found",
+            Instance = context.Request.Path,
+            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+            Status = 404,
+        };
+        await context.Response.WriteAsJsonAsync(problem);
+    });
+});
 
-app.MapControllers();
+
+
+
+
 
 app.Run();
 
 
-#region Create Role and  initial User Register
 
-void CreateRolesAndAdministrator(IServiceProvider serviceProvider)
-{
-    var roleNames = new List<string>()
-    {
-        "Administrator",
-        "SuperAdmin",
-        "Admin",
-        "User"
-    };
-
-    //Creating roles
-    foreach (var role in roleNames) { CreateRole(serviceProvider, role); }
-
-    //Administrator User Setup
-    const string administratorUserEmail = "Administrator@gmail.com";
-    const string administratorPwd = "Administrator@4744";
-    AddUserToRole(serviceProvider, new ApplicationUser()
-    {
-        FirstName = "Yuki",
-        LastName = "Rei",
-        Email = administratorUserEmail,
-        UserName = administratorUserEmail,
-        EmailConfirmed = true,
-        LockoutEnabled = false,
-        Active = true,
-    }, administratorPwd, "Administrator");
-
-
-
-}
-//<Summary>
-//Create a role if not exists
-//</Summary>
-/// <param name="serviceProvider">Service Provider</param>
-/// <param name="roleName">Role Name</param>
-void CreateRole(IServiceProvider serviceProvider, string roleName)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roleExists = roleManager.RoleExistsAsync(roleName);
-    roleExists.Wait();
-    if (roleExists.Result) return;
-    var roleResult = roleManager.CreateAsync(new IdentityRole(roleName));
-    roleResult.Wait();
-}
-
-//<summary>
-//Add user to a role if the user exits,otherwise create the user and adds him to the role
-//</summary>
-void AddUserToRole(IServiceProvider serviceProvider, ApplicationUser user, string userPwd, string roleName)
-{
-    var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    Task<ApplicationUser> checkAppUser = userManager.FindByEmailAsync(user.Email);
-    checkAppUser.Wait();
-    ApplicationUser appUser = checkAppUser.Result;
-    if (checkAppUser.Result == null)
-    {
-        Task<IdentityResult> taskCreateAppUser = userManager.CreateAsync(user, userPwd);
-        if (taskCreateAppUser.Result.Succeeded)
-        {
-            appUser = user;
-        }
-    }
-    Task<IdentityResult> newUserRole = userManager.AddToRoleAsync(appUser, roleName);
-    newUserRole.Wait();
-}
-#endregion
 

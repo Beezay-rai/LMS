@@ -1,54 +1,55 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Models;
+using LMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/admin/student")]
+    [Route("api/v1/students")]
     [ApiController]
     [Authorize]
     public class StudentController : ControllerBase
     {
-        private readonly IStudent _Student;
-        public StudentController(IStudent Student)
+        private readonly IStudentRepository _repo;
+        public StudentController(IStudentRepository Student)
         {
-            _Student = Student;
+            _repo = Student;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllStudent()
         {
-            var data = await _Student.GetAllStudent();
-            return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "StudentList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
+            var data = await _repo.GetAllStudent();
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpGet("{studentId}")]
         public async Task<IActionResult> GetStudentById(int studentId)
         {
-            var data = await _Student.GetStudentById(studentId);
-            return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Student fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
+            var data = await _repo.GetStudentById(studentId);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStudent([FromBody]StudentModel model)
+        public async Task<IActionResult> CreateStudent(StudentModel model)
         {
-            var data = await _Student.InsertUpdateStudent(model);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Student" : "Not Created Try Again", Data = data });
+            var data = await _repo.AddStudent(model);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpPut("{studentId}")]
-        public async Task<IActionResult> EditStudent(int studentId,[FromBody] StudentModel model)
+        public async Task<IActionResult> EditStudent(int studentId, [FromBody] StudentModel model)
         {
-            var data = await _Student.InsertUpdateStudent(model);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Student" : "Not Updated Try Again", Data = data });
+            var data = await _repo.UpdateStudent(studentId, model);
+
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpDelete("{studentId}")]
         public async Task<IActionResult> DeleteStudent(int studentId)
         {
-            var data = await _Student.DeleteStudent(studentId);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Student" : "Not Deleted Try Again", Data = data });
+            var data = await _repo.DeleteStudent(studentId);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
     }

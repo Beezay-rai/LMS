@@ -7,9 +7,9 @@ namespace LMS.Data
     {
         [Key]
         public int Id { get; set; }
-      
-      
-        
+
+
+
         public string Remarks { get; set; }
 
 
@@ -39,11 +39,11 @@ namespace LMS.Data
         public DateTime ReturnDate { get; set; }
 
         [ForeignKey(nameof(TransactionId))]
-        public Transaction Transaction { get;set; }
+        public Transaction Transaction { get; set; }
         [ForeignKey(nameof(BookId))]
-        public Book Book { get;set; }
+        public Book Book { get; set; }
         [ForeignKey(nameof(StudentId))]
-        public Student Student { get;set; }
+        public Student Student { get; set; }
 
     }
     public enum TransactionStatus
@@ -52,7 +52,7 @@ namespace LMS.Data
         Returned,
         Overdue
     }
-  
+
 
 
 }

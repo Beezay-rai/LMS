@@ -13,7 +13,7 @@ namespace LMS.Data
         public DateTime BirthDate { get; set; }
         [EmailAddress]
         public string EmailAddress { get; set; }
-        [StringLength(10),MinLength(10)]
+        [StringLength(10), MinLength(10)]
         public string Contact { get; set; }
 
         public bool? Deleted { get; set; }

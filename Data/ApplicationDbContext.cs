@@ -7,7 +7,7 @@ namespace LMS.Data
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions options)
-            :base(options)
+            : base(options)
         { }
 
         public DbSet<Book> Book { get; set; }
@@ -18,6 +18,8 @@ namespace LMS.Data
         public DbSet<BookTransaction> BookTransaction { get; set; }
         public DbSet<BookCategoryDetail> BookCategoryDetail { get; set; }
         public DbSet<Course> Course { get; set; }
+        public DbSet<RentBook> RentBook { get; set; }
+        public DbSet<RentBookDetail> RentBookDetail { get; set; }
 
     }
 }

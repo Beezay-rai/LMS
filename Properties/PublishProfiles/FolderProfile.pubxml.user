@@ -5,13 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\Users\OnePoint-bijay\Desktop\Projects\ProjectsPublishes\LMSApiPub</_PublishTargetUrl>
-    <History>True|2024-10-16T15:20:20.3092127Z||;False|2024-10-16T21:05:00.1427039+05:45||;True|2024-04-22T12:25:23.1817884+05:45||;True|2024-04-22T12:24:48.3729047+05:45||;True|2024-04-22T11:31:52.1232925+05:45||;</History>
+    <History>True|2024-11-13T03:48:39.6830070Z||;False|2024-11-13T09:31:38.9319084+05:45||;True|2024-11-12T16:41:05.6938358+05:45||;True|2024-11-05T12:23:53.6790997+05:45||;True|2024-11-05T11:36:46.7042447+05:45||;True|2024-10-18T15:38:30.3425175+05:45||;True|2024-10-17T15:53:45.9675808+05:45||;</History>
     <LastFailureDetails />
-    <TimeStampOfAssociatedLegacyPublishXmlFile />
   </PropertyGroup>
-  <ItemGroup>
-    <DestinationConnectionStrings Include="DefaultConnection">
-      <Value>Server=DESKTOP-KH5S7CP%3bInitial Catalog=LMS%3b trusted_connection=true</Value>
-    </DestinationConnectionStrings>
-  </ItemGroup>
 </Project>

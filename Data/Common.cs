@@ -8,8 +8,7 @@ namespace LMS.Data
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
-
-        public bool IsDeleted { get; set; }
+        public bool delete_status { get; set; }
     }
 
 

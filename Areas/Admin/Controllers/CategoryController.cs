@@ -1,54 +1,55 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Models;
+using LMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/admin/category")]
+    [Route("api/v1/categories")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
-        private readonly ICategory _Category;
-        public CategoryController(ICategory Category)
+        private readonly ICategoryRepository _repo;
+        public CategoryController(ICategoryRepository Category)
         {
-            _Category = Category;
+            _repo = Category;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllCategory()
         {
-            var data = await _Category.GetAllCategory();
-            return Ok(new ApiResponse() { Status = data.Any(), Message = data.Any() ? "CategoryList Generated Sucessfully" : "Not Generated Try Again !", Data = data });
+            var data = await _repo.GetAllCategory();
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpGet("{categoryId}")]
         public async Task<IActionResult> GetCategoryById(int categoryId)
         {
-            var data = await _Category.GetCategoryById(categoryId);
-            return Ok(new ApiResponse() { Status = data != null, Message = data != null ? "Category fetched by Id Sucessfully" : "Not Fetched by Id Try Again !", Data = data });
+            var data = await _repo.GetCategoryById(categoryId);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CategoryModel model)
         {
-            var data = await _Category.InsertUpdateCategory(model);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Created Category" : "Not Created Try Again", Data = data });
+            var data = await _repo.AddCategory(model);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpPut("{categoryId}")]
-        public async Task<IActionResult> EditCategory(int categoryId,[FromBody]CategoryModel model)
+        public async Task<IActionResult> EditCategory(int categoryId, [FromBody] CategoryModel model)
         {
-            var data = await _Category.InsertUpdateCategory(model);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Updated Category" : "Not Updated Try Again", Data = data });
+            var data = await _repo.UpdateCategory(categoryId,model);
+            
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> DeleteCategory(int id)
+        [HttpDelete("{categoryId}")]
+        public async Task<IActionResult> DeleteCategory(int categoryId)
         {
-            var data = await _Category.DeleteCategory(id);
-            return Ok(new ApiResponse() { Status = data, Message = data ? "Successfully Deleted Category" : "Not Deleted Try Again", Data = data });
+            var data = await _repo.DeleteCategory(categoryId);
+            return StatusCode((int)data.HttpStatusCode, data);
         }
 
     }

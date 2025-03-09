@@ -1,13 +1,14 @@
 ﻿using LMS.Areas.Admin.Models;
+using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
     public interface IStaff
     {
 
-        Task<List<StaffModel>> GetAllStaff();
-        Task<StaffModel> GetStaffById(int id);
-        Task<bool> InsertUpdateStaff(StaffModel model);
-        Task<bool> DeleteStaff(int id);
+        Task<BaseApiResponseModel> GetAllStaff();
+        Task<BaseApiResponseModel> GetStaffById(int id);
+        Task<BaseApiResponseModel> InsertUpdateStaff(StaffModel model);
+        Task<BaseApiResponseModel> DeleteStaff(int id);
     }
 }

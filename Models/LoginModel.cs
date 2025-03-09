@@ -13,10 +13,8 @@ namespace LMS.Models
         [EmailAddress]
         public string Email { get; set; }
         [Required]
-        [Compare("ConfirmPassword")]
         public string Password { get; set; }
-        [Required]
-        public string ConfirmPassword { get; set; }
+    
     }
     public class GETSignUpModel
     {
@@ -33,18 +31,13 @@ namespace LMS.Models
 
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Username { get; set; }
 
         [Required]
         public string Password { get; set; }
     }
 
-    public class ApiResponse
-    {
-        public bool Status { get; set; }
-        public string Message { get; set; } = string.Empty;
-        public object Data { get; set; } = new object();
-    }
+   
 
 
     public class LoginResponse

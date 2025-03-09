@@ -1,113 +1,215 @@
-﻿using LMS.Areas.Admin.Interface;
+﻿using AutoMapper;
+using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
+using LMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
-    public class StudentRepository : IStudent
+    public class StudentRepository : IStudentRepository
     {
+        private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string _userId;
 
-        public StudentRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor)
+        public StudentRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
             _contextAccessor = contextAccessor;
             _userId = _contextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
         }
-        public async Task<List<StudentGETModel>> GetAllStudent()
+
+        public async Task<BaseApiResponseModel> GetAllStudent()
         {
-            return await _context.Student.Where(x => x.Deleted == false).Select(x => new StudentGETModel()
+            var response = new ApiResponseModel<List<StudentModel>>();
+            try
             {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                BirthDate = x.BirthDate,
-                CourseId =x.CourseId,
-                CourseName = _context.Course.Where(z=>z.Id==x.CourseId).Select(x=>x.CourseName).FirstOrDefault(),
-                EmailAddress=x.EmailAddress,
-                PhoneNumber=x.PhoneNumber
-            }).ToListAsync();
+                var data = _mapper.Map<List<StudentModel>>(await _context.Student.Where(x => x.delete_status == false).ToListAsync());
+                response.Data = data;
+                response.Status = true;
+                response.HttpStatusCode = HttpStatusCode.OK;
+                response.Message = "Available Student List";
+                return response;
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = new ApiErrorResponseModel<ErrorDetailModel>()
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+               
+                return errorResponse;
+
+            }
+
         }
-        public async Task<StudentGETModel> GetStudentById(int id)
+        public async Task<BaseApiResponseModel> GetStudentById(int id)
         {
-            return await _context.Student.Where(x => x.Id == id && x.Deleted == false).Select(x => new StudentGETModel()
+            var response = new ApiResponseModel<StudentModel>();
+            try
             {
-                Id = x.Id,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                BirthDate = x.BirthDate,
-                CourseId = x.CourseId,
-                CourseName = _context.Course.Where(z => z.Id == x.CourseId).Select(x => x.CourseName).FirstOrDefault(),
-                EmailAddress = x.EmailAddress,
-                PhoneNumber=x.PhoneNumber
-                
-            }).FirstOrDefaultAsync();
+                var data = _mapper.Map<StudentModel>(await _context.Student.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
+                if (data == null)
+                {
+                    return new BaseApiResponseModel
+                    {
+                        Status = false,
+                        Message = "Student not found with Id : "+id,
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
+                }
+
+                response.Data = data;
+                response.Status = true;
+                response.Message = "Student details retrieved successfully";
+                response.HttpStatusCode = HttpStatusCode.OK;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+            }
         }
-        public async Task<bool> InsertUpdateStudent(StudentModel model)
+
+        public async Task<BaseApiResponseModel> DeleteStudent(int id)
         {
             try
             {
-                if (model.Id > 0)
+                var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == id);
+                if (student == null)
                 {
-                    var student = await _context.Student.Where(x => x.Id == model.Id && x.Deleted == false).FirstOrDefaultAsync();
-                    if (student != null)
+                    return new BaseApiResponseModel
                     {
-                        student.FirstName = model.FirstName;
-                        student.LastName = model.LastName;
-                        student.BirthDate = model.BirthDate;
-                        student.CourseId = model.CourseId;
-                        student.EmailAddress = model.EmailAddress;
-                        student.PhoneNumber = model.PhoneNumber;
-
-                        student.UpdatedDate = DateTime.UtcNow;
-                        student.UpdatedBy = _userId;
-
-                        _context.Entry(student).State = EntityState.Modified;
-                    }
-                    else { return false; }
-                }
-                else
-                {
-                    Student student = new Student()
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        BirthDate = model.BirthDate,
-                        EmailAddress=model.EmailAddress,
-                        CourseId=model.CourseId,
-                        PhoneNumber=model.PhoneNumber,
-                        CreatedBy = _userId,
-                        CreatedDate = DateTime.UtcNow,
-                        Deleted = false
+                        Status = false,
+                        Message = "Student not found with Id : " + id,
+                        HttpStatusCode = HttpStatusCode.NotFound
                     };
-                    await _context.Student.AddAsync(student);
                 }
+
+                student.delete_status = true;
+                student.deleted_date = DateTime.UtcNow;
+                _context.Entry(student).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
-                return true;
+
+                return new BaseApiResponseModel
+                {
+                    Status = true,
+                    Message = "Student deleted successfully",
+                    HttpStatusCode = HttpStatusCode.OK
+                };
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
             }
         }
-        public async Task<bool> DeleteStudent(int id)
-        {
-            var data = await _context.Student.Where(x => x.Id == id && x.Deleted == false).FirstOrDefaultAsync();
-            if (data != null && data.Deleted==false)
-            {
-                data.Deleted = true;
-                data.DeletedDate = DateTime.UtcNow;
-                data.DeletedBy = _userId;
-                _context.Entry(data).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return true;
 
+        public async Task<BaseApiResponseModel> AddStudent(StudentModel model)
+        {
+            try
+            {
+                var student = _mapper.Map<Student>(model);
+                student.created_by = _userId;
+                student.created_date = DateTime.UtcNow; 
+                await _context.Student.AddAsync(student);
+                await _context.SaveChangesAsync();
+                model = _mapper.Map<StudentModel>(student);
+                return new ApiResponseModel<StudentModel>
+                {
+                    Status = true,
+                    Data = model,
+                    Message = "Student added successfully",
+                    HttpStatusCode = HttpStatusCode.Created
+                };
             }
-            else { return false; }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+            }
+        }
+
+        public async Task<BaseApiResponseModel> UpdateStudent(int studentId, StudentModel model)
+        {
+            try
+            {
+                model.Id =studentId;
+                var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == studentId && !x.delete_status);
+                if (student == null)
+                {
+                    return new ApiResponseModel<StudentModel>
+                    {
+                        Status = false,
+                        Message = "Student not found",
+                        Data = model,
+                        HttpStatusCode = HttpStatusCode.NotFound
+                    };
+                }
+
+                _mapper.Map(model, student);
+                student.updated_date= DateTime.Now;
+                student.updated_by = _userId;
+                _context.Entry(student).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return new ApiResponseModel<StudentModel>
+                {
+                    Status = true,
+                    Data = model,
+                    Message = "Student updated successfully",
+                    HttpStatusCode = HttpStatusCode.OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResponseModel<ErrorDetailModel>
+                {
+                    Status = false,
+                    Message = ex.Message,
+                    HttpStatusCode = HttpStatusCode.InternalServerError,
+                    Errors = new List<ErrorDetailModel>
+                    {
+                         new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
+                    },
+                };
+            }
         }
 
     }

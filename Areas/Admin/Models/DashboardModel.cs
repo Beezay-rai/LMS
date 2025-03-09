@@ -1,6 +1,6 @@
 ﻿namespace LMS.Areas.Admin.Models
 {
-    public class DashboardViewModel
+    public class DashboardModel
     {
         public int Id { get; set; }
         public int BookCount { get; set; }
@@ -22,9 +22,9 @@
     {
         public int Id { get; set; }
         public string MonthName { get; set; }
-        public int PresentCount { get; set; }  
-        public int PreviousCount { get; set; }  
+        public int PresentCount { get; set; }
+        public int PreviousCount { get; set; }
     }
 
-    
+
 }

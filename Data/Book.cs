@@ -6,26 +6,27 @@ namespace LMS.Data
     public class Book
     {
         [Key]
-        public int Id { get; set; }
+        public int id { get; set; }
         [Required]
-        public string BookName { get; set; }
+        public string book_name { get; set; }
         [Required]
-        public string ISBN { get; set; }
+        public string isbn { get; set; }
         [Required]
-        public string AuthorName { get; set; }
+        public string author_name { get; set; }
         [Required]
-        public int Quantity { get; set; }
+        public int quantity { get; set; }
         [Required]
         [DataType(DataType.Date)]
-        public DateTime PublicationDate { get;set; }
-      
-        public bool? Deleted { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public string? UpdatedBy { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public string? DeletedBy { get; set; }
-        public DateTime? DeletedDate { get; set; }
+        public DateTime publication_date { get; set; }
+
+        public bool delete_status { get; set; }
+        public string created_by { get; set; }
+        public DateTime created_date { get; set; }
+        public string updated_by { get; set; }
+        public DateTime updated_date { get; set; }
+        public string deleted_by { get; set; }
+        public DateTime deleted_date { get; set; }
+
     }
 
 
