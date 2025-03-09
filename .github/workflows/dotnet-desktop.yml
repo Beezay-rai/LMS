@@ -3,7 +3,7 @@ name: Build, Publish, and Deploy to MonsterASP.NET
 on:
   push:
     branches:
-      - master
+      - master  # Change this if your branch is actually 'master'
 
 jobs:
   build_and_deploy:
@@ -19,13 +19,19 @@ jobs:
           dotnet-version: 6.0
 
       - name: Install dependencies
-        run: dotnet restore --locked-mode
+        run: dotnet restore  # Removed --locked-mode unless using a lock file
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
       - name: Run Tests
-        run: dotnet test --configuration Release --no-build
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
+
+      - name: Upload Test Results (Optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test_results.trx
 
       - name: Publish
         run: dotnet publish --configuration Release --output ./publish --runtime win-x64 --self-contained false
