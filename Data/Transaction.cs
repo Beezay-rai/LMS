@@ -3,49 +3,59 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Data
 {
-    public class Transaction
+    public class Transaction : BaseEntity
     {
         [Key]
         public int Id { get; set; }
 
-
-
+        [Required]
+        [StringLength(500)]
         public string Remarks { get; set; }
 
+        [Required]
+        public TransactionType Type { get; set; }
 
+        [Required]
+        public decimal Amount { get; set; }
 
-        public bool Deleted { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public string? UpdatedBy { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public string? DeletedBy { get; set; }
-        public DateTime? DeletedDate { get; set; }
+        public virtual ICollection<BookTransaction> BookTransactions { get; set; }
     }
 
-
-    public class BookTransaction
+    public class BookTransaction : BaseEntity
     {
         [Key]
         public int Id { get; set; }
+
         [Required]
         public int TransactionId { get; set; }
+
         [Required]
         public int BookId { get; set; }
+
         [Required]
         public int StudentId { get; set; }
+
+        [Required]
         public TransactionStatus Status { get; set; }
+
+        [Required]
+        [DataType(DataType.Date)]
+        public DateTime IssueDate { get; set; }
+
+        [Required]
         [DataType(DataType.Date)]
         public DateTime ReturnDate { get; set; }
 
         [ForeignKey(nameof(TransactionId))]
-        public Transaction Transaction { get; set; }
-        [ForeignKey(nameof(BookId))]
-        public Book Book { get; set; }
-        [ForeignKey(nameof(StudentId))]
-        public Student Student { get; set; }
+        public virtual Transaction Transaction { get; set; }
 
+        [ForeignKey(nameof(BookId))]
+        public virtual Book Book { get; set; }
+
+        [ForeignKey(nameof(StudentId))]
+        public virtual Student Student { get; set; }
     }
+
     public enum TransactionStatus
     {
         Issued,
@@ -53,6 +63,10 @@ namespace LMS.Data
         Overdue
     }
 
-
-
+    public enum TransactionType
+    {
+        Issue,
+        Return,
+        Fine
+    }
 }

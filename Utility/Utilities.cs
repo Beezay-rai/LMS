@@ -22,25 +22,17 @@ namespace LMS.Utility
             _configuration = configuration;
             _context = context;
         }
-        public string GenerateJWTToken(List<Claim> authClaims)
+
+        public async Task<ApplicationUser>GetUserById(string userId)
         {
-            var token = new JwtSecurityToken(
-                       issuer: _configuration["JWT:ValidIssuer"],
-                       audience: _configuration["JWT:ValidAudience"],
-                       claims: authClaims,
-                       notBefore: DateTime.UtcNow,
-                       expires: DateTime.UtcNow.AddDays(1),
-                       signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:IssuerSigningKey"])), SecurityAlgorithms.HmacSha256)
-                       );
-            var jwtToken = new JwtSecurityTokenHandler().WriteToken(token);
-            return jwtToken;
+            var user = await _userManager.FindByIdAsync(userId);
+            return user;    
         }
 
         public async Task<List<Claim>> GetUserClaims(ApplicationUser user)
         {
-
             var userRoles = await _userManager.GetRolesAsync(user);
-            var role = userRoles.FirstOrDefault() ?? " ";
+            var role = userRoles.FirstOrDefault() ?? "";
             var authClaims = new List<Claim>
                     {
                         new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),

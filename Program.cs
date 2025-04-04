@@ -1,11 +1,14 @@
+
 using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Repository;
+using LMS.Cache;
 using LMS.Data;
 using LMS.Interface;
 using LMS.Models;
 using LMS.Repository;
 using LMS.Security;
 using LMS.Services;
+
 using LMS.Utility;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,6 +16,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
@@ -77,16 +81,18 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 
-builder.Services.AddScoped<IAccount, AccountRepository>();
+
+builder.Services.AddScoped<IAuthenticateRepository, AuthenticateRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IRentBookRepository, RentBookRepository>();
-
+builder.Services.AddSingleton<IRedisCache, RedisCache>();
 
 builder.Services.AddScoped<IDashboard, DashboardRepository>();
 builder.Services.AddScoped<IUtility, Utilities>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 //builder.Services.AddOpenTelemetry()
@@ -181,23 +187,21 @@ app.UseCors("LmsReact");
 app.UseAuthentication();
 
 app.UseAuthorization();
-app.UseEndpoints(endpoints =>
+app.MapControllers();
+app.MapFallback(async context =>
 {
-    endpoints.MapControllers();
-    endpoints.MapFallback(async context =>
+    context.Response.StatusCode = 404;
+    var problem = new ProblemDetails()
     {
-        context.Response.StatusCode = 404;
-        var problem = new ProblemDetails()
-        {
-            Title = "Not Found",
-            Detail = "Requested Service Not Found",
-            Instance = context.Request.Path,
-            Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
-            Status = 404,
-        };
-        await context.Response.WriteAsJsonAsync(problem);
-    });
+        Title = "Not Found",
+        Detail = "Requested Service Not Found",
+        Instance = context.Request.Path,
+        Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+        Status = 404,
+    };
+    await context.Response.WriteAsJsonAsync(problem);
 });
+
 
 
 

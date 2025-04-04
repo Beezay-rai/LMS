@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
 using LMS.Data;
@@ -32,12 +33,11 @@ namespace LMS.Areas.Admin.Repository
             {
                 var books = await _context.Book
                     .Where(x => !x.delete_status)
+                    .ProjectTo<BookModel>(_mapper.ConfigurationProvider)
                     .ToListAsync();
-               
 
-                var data = _mapper.Map<List<BookModel>>(books);
 
-                data.ForEach(data => 
+                books.ForEach(data => 
                 {
                     data.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == data.Id).Select(x => x.CategoryId).ToList();
                 
@@ -47,7 +47,8 @@ namespace LMS.Areas.Admin.Repository
                     Status = true,
                     HttpStatusCode = HttpStatusCode.OK,
                     Message = "Book List Retrieved",
-                    Data = data
+                    //Data = data
+                    Data = books
                 };
             }
             catch (Exception ex)
@@ -69,8 +70,9 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var book = await _context.Book
-                    .FirstOrDefaultAsync(x => x.id == id && !x.delete_status);
+                var book = await _context.Book.Where(x => x.id == id && !x.delete_status)
+                                              .ProjectTo<BookModel>(_mapper.ConfigurationProvider)
+                                              .FirstOrDefaultAsync();
 
                 if (book == null)
                 {
@@ -82,14 +84,13 @@ namespace LMS.Areas.Admin.Repository
                     };
                 }
 
-                var data = _mapper.Map<BookModel>(book);
-                data.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == data.Id).Select(x => x.CategoryId).ToList();
+                book.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == book.Id).Select(x => x.CategoryId).ToList();
                 return new ApiResponseModel<BookModel>
                 {
                     Status = true,
                     HttpStatusCode = HttpStatusCode.OK,
                     Message = "Book retrieved successfully",
-                    Data = data
+                    Data = book
                 };
             }
             catch (Exception ex)

@@ -2,7 +2,7 @@
 
 namespace LMS.Interface
 {
-    public interface IAccount
+    public interface IAuthenticateRepository
     {
         Task<BaseApiResponseModel> SignUp(SignUpModel model);
         Task<BaseApiResponseModel> Login(LoginModel model);

@@ -43,10 +43,10 @@ namespace LMS.Models
     public class LoginResponse
     {
         public string Name { get; set; }
-        public string Token { get; set; }
+        public string access_token { get; set; }
+        public string refresh_token { get; set; }
         public DateTime NotBefore { get; set; }
         public DateTime Expiration { get; set; }
-        public string Role { get; set; }
     }
 
 }
