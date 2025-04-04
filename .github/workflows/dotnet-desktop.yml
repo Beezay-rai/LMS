@@ -1,5 +1,4 @@
 name: Build, Publish, and Deploy to MonsterASP.NET
-
 on:
   push:
     branches:
@@ -8,33 +7,25 @@ on:
 jobs:
   build_and_deploy:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup .NET 6
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 6.0
-
+          
       - name: Install dependencies
-        run: dotnet restore  # Removed --locked-mode unless using a lock file
-
+        run: dotnet restore
+        
       - name: Build
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run Tests
-        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test_results.trx"
-
-      - name: Upload Test Results (Optional)
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test_results.trx
-
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish --runtime win-x64 --self-contained false
+        run: dotnet publish --configuration Release --output ./publish --runtime win-x86 
+        
+      - name: Test with .NET
+        run: dotnet test
 
       - name: Deploy to MonsterASP.NET via WebDeploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
