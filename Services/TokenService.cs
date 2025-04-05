@@ -77,7 +77,7 @@ namespace LMS.Services
                 audience: _configuration["JWT:ValidAudience"],
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddMinutes(expireMinutes),
+                expires: DateTime.UtcNow.AddSeconds(expireMinutes),
                 signingCredentials: _signingCredentials
             );
 

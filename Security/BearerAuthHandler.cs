@@ -78,8 +78,10 @@ namespace LMS.Security
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
+                RequireExpirationTime =true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
+                ClockSkew = TimeSpan.Zero,
                 ValidIssuer = _configuration["JWT:ValidIssuer"],
                 ValidAudience = _configuration["JWT:ValidAudience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key),
