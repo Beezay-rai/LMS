@@ -72,12 +72,13 @@ namespace LMS.Services
 
         private string GenerateToken(IEnumerable<Claim> claims, int expireMinutes)
         {
+            var todayDate = DateTime.UtcNow;
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
                 claims: claims,
                 notBefore: DateTime.UtcNow,
-                expires: DateTime.UtcNow.AddSeconds(expireMinutes),
+                expires: DateTime.UtcNow.AddMinutes(expireMinutes),
                 signingCredentials: _signingCredentials
             );
 

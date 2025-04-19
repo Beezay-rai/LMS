@@ -45,8 +45,7 @@ namespace LMS.Models
         public string Name { get; set; }
         public string access_token { get; set; }
         public string refresh_token { get; set; }
-        public DateTime NotBefore { get; set; }
-        public DateTime Expiration { get; set; }
+        public string role { get; set; }
     }
 
 }

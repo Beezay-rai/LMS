@@ -1,6 +1,6 @@
 ﻿using LMS.Models;
 
-namespace LMS.Interface
+namespace LMS.Interfaces
 {
     public interface IAuthenticateRepository
     {

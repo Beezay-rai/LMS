@@ -22,7 +22,7 @@ namespace LMS.Areas.Admin.Repository
             var data = new DashboardModel()
             {
                 BookCount = await _context.Book.Where(x => x.delete_status == false).CountAsync(),
-                IssuedCount = await _context.Transaction.Where(x => x.Deleted == false).CountAsync(),
+                //IssuedCount = await _context.Transaction.Where(x => x.Deleted == false).CountAsync(),
                 //StudentCount = await _context.Student.Where(x => x.Deleted == false).CountAsync(),
             };
 
@@ -54,8 +54,8 @@ namespace LMS.Areas.Admin.Repository
                 var count = new UserActivityCount()
                 {
                     MonthName = monthName,
-                    PresentCount = _context.Transaction.Where(x => x.CreatedDate.Month == monthId).Count(),
-                    PreviousCount = _context.Transaction.Where(x => x.CreatedDate.Day == monthId && x.CreatedDate.Day == (DateTime.Now.Day)).Count(),
+                    //PresentCount = _context.Transaction.Where(x => x.created_date.Month == monthId).Count(),
+                    //PreviousCount = _context.Transaction.Where(x => x.created_date.Day == monthId && x.created_date.date == (DateTime.Now.Day)).Count(),
                 };
                 data.UserActivityCountList.Add(count);
             }

@@ -1,5 +1,8 @@
-﻿using LMS.Models;
+﻿using LMS.Data;
+using LMS.Models;
+using LMS.Models.Settings;
 using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace LMS.Utility
 {
@@ -11,16 +14,17 @@ namespace LMS.Utility
             try
             {
 
-                var adminCred = new AdminCred();
-                config.GetSection("AdminCred").Bind(adminCred);
+                var adminCred = new AdminConfig();
+                config.GetSection("AdminConfig").Bind(adminCred);
 
                 if (adminCred != null && adminCred.Username != null && adminCred.Password != null)
                 {
 
                     using (var scope = serviceProvider.CreateScope())
                     {
+                        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                        dbContext.Database.EnsureCreated();
                         var scopedServiceProvider = scope.ServiceProvider;
-
 
                         var userManager = scopedServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
@@ -48,6 +52,7 @@ namespace LMS.Utility
                             if (result.Succeeded)
                             {
                                 logger.LogInformation("Administrator Seeded into Database!");
+                           
                             }
                             else
                             {
@@ -67,16 +72,6 @@ namespace LMS.Utility
             {
                 logger.LogError(ex, "An error occurred during database seeding.");
             }
-        }
-
-
-
-
-        protected class AdminCred
-        {
-            public string Email { get; set; }
-            public string Username { get; set; }
-            public string Password { get; set; }
         }
     }
 

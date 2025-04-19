@@ -1,4 +1,5 @@
-﻿using LMS.Interface;
+﻿using LMS.Filters;
+using LMS.Interfaces;
 using LMS.Models;
 using LMS.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -28,6 +29,7 @@ namespace LMS.Controllers
 
         [HttpPost]
         [Route("api/v1/auth/login")]
+        [CacheFilter(20)]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             return Ok(await _repo.Login(model));

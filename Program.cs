@@ -1,10 +1,11 @@
 
 using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Repository;
-using LMS.Cache;
 using LMS.Data;
-using LMS.Interface;
+using LMS.Filters;
+using LMS.Interfaces;
 using LMS.Models;
+using LMS.Models.Settings;
 using LMS.Repository;
 using LMS.Security;
 using LMS.Services;
@@ -19,11 +20,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new CacheFilter()); 
+});
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -88,11 +93,34 @@ builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IRentBookRepository, RentBookRepository>();
-builder.Services.AddSingleton<IRedisCache, RedisCache>();
 
 builder.Services.AddScoped<IDashboard, DashboardRepository>();
 builder.Services.AddScoped<IUtility, Utilities>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+
+var redisCacheSetting = new RedisCacheSetting();
+builder.Configuration.GetSection("RedisCacheSetting").Bind(redisCacheSetting);
+builder.Services.AddSingleton(redisCacheSetting);
+
+
+if (redisCacheSetting.Enable)
+{
+    IConnectionMultiplexer muxer = ConnectionMultiplexer.Connect(
+            new ConfigurationOptions
+            {
+                EndPoints = { redisCacheSetting.ConnectionString },
+                User = redisCacheSetting.Username,
+                Password = redisCacheSetting.Password
+            }
+        );
+    builder.Services.AddStackExchangeRedisCache(option =>
+    {
+        option.ConnectionMultiplexerFactory = () => Task.FromResult(muxer);
+    });
+    builder.Services.AddSingleton(muxer);
+    builder.Services.AddSingleton<ICacheService, RedisCacheService>();
+}
 
 
 //builder.Services.AddOpenTelemetry()
@@ -188,19 +216,19 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 app.MapControllers();
-app.MapFallback(async context =>
-{
-    context.Response.StatusCode = 404;
-    var problem = new ProblemDetails()
-    {
-        Title = "Not Found",
-        Detail = "Requested Service Not Found",
-        Instance = context.Request.Path,
-        Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
-        Status = 404,
-    };
-    await context.Response.WriteAsJsonAsync(problem);
-});
+//app.MapFallback(async context =>
+//{
+//    context.Response.StatusCode = 404;
+//    var problem = new ProblemDetails()
+//    {
+//        Title = "Not Found",
+//        Detail = "Requested Service Not Found",
+//        Instance = context.Request.Path,
+//        Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4",
+//        Status = 404,
+//    };
+//    await context.Response.WriteAsJsonAsync(problem);
+//});
 
 
 

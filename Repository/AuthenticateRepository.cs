@@ -1,7 +1,7 @@
 ﻿using Google.Apis.Auth;
 using LMS.Crypto;
 using LMS.Data;
-using LMS.Interface;
+using LMS.Interfaces;
 using LMS.Models;
 using LMS.Services;
 using LMS.Utility;
@@ -102,7 +102,7 @@ namespace LMS.Repository
 
             var user = await _userManager.FindByNameAsync(model.Username);
             var authClaims = await _utility.GetUserClaims(user);
-
+            var userRoles = await _userManager.GetRolesAsync(user);
             return new ApiResponseModel<LoginResponse>
             {
                 Status = true,
@@ -112,8 +112,7 @@ namespace LMS.Repository
                     Name = $"{user.FirstName} {user.LastName}",
                     access_token = _tokenService.GenerateAccessToken(authClaims),
                     refresh_token = _tokenService.GenerateRefreshToken(user.Id),
-                    NotBefore = DateTime.UtcNow,
-                    Expiration = DateTime.UtcNow.AddDays(1),
+                    role = string.Join(",", userRoles)  
                 }
             };
         }
@@ -131,6 +130,7 @@ namespace LMS.Repository
                 }
 
                 var authClaims = await _utility.GetUserClaims(user);
+             
                 return new ApiResponseModel<LoginResponse>
                 {
                     Status = true,
@@ -140,8 +140,7 @@ namespace LMS.Repository
                         Name = $"{user.FirstName} {user.LastName}",
                         access_token = _tokenService.GenerateAccessToken(authClaims),
                         refresh_token = _tokenService.GenerateRefreshToken(user.Id),
-                        NotBefore = DateTime.UtcNow,
-                        Expiration = DateTime.UtcNow.AddDays(1),
+                     
                     }
                 };
             }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Data
 {
-    public class Transaction : BaseEntity
+    public class Transaction :BaseAuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -16,12 +16,13 @@ namespace LMS.Data
         public TransactionType Type { get; set; }
 
         [Required]
-        public decimal Amount { get; set; }
+        [DisplayFormat(DataFormatString = "{0:N2}", ApplyFormatInEditMode = true)]
+        public int Amount { get; set; }
 
         public virtual ICollection<BookTransaction> BookTransactions { get; set; }
     }
 
-    public class BookTransaction : BaseEntity
+    public class BookTransaction :BaseAuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -45,6 +46,7 @@ namespace LMS.Data
         [Required]
         [DataType(DataType.Date)]
         public DateTime ReturnDate { get; set; }
+        public bool? Deleted { get; set; }
 
         [ForeignKey(nameof(TransactionId))]
         public virtual Transaction Transaction { get; set; }
