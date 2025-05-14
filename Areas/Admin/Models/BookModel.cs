@@ -1,12 +1,11 @@
 ﻿using Swashbuckle.AspNetCore.Annotations;
 using System.ComponentModel.DataAnnotations;
-using System.Text.Json.Serialization;
 
 namespace LMS.Areas.Admin.Models
 {
     public class BookModel
     {
-     
+
         [SwaggerIgnore]
         public int Id { get; set; }
         [Required]
@@ -22,6 +21,6 @@ namespace LMS.Areas.Admin.Models
         public List<int> book_categories { get; set; }
 
     }
- 
+
 
 }

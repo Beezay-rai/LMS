@@ -4,7 +4,7 @@ using LMS.Data;
 
 namespace LMS.Services
 {
-    public class AutoMapperProfiles:Profile
+    public class AutoMapperProfiles : Profile
     {
         public AutoMapperProfiles()
         {

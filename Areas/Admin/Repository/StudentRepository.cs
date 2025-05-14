@@ -48,7 +48,7 @@ namespace LMS.Areas.Admin.Repository
                          new ErrorDetailModel { Message = ex.InnerException.Message, StackTrace = ex.StackTrace }
                     },
                 };
-               
+
                 return errorResponse;
 
             }
@@ -65,7 +65,7 @@ namespace LMS.Areas.Admin.Repository
                     return new BaseApiResponseModel
                     {
                         Status = false,
-                        Message = "Student not found with Id : "+id,
+                        Message = "Student not found with Id : " + id,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }
@@ -139,7 +139,7 @@ namespace LMS.Areas.Admin.Repository
             {
                 var student = _mapper.Map<Student>(model);
                 student.created_by = _userId;
-                student.created_date = DateTime.UtcNow; 
+                student.created_date = DateTime.UtcNow;
                 await _context.Student.AddAsync(student);
                 await _context.SaveChangesAsync();
                 model = _mapper.Map<StudentModel>(student);
@@ -170,7 +170,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                model.Id =studentId;
+                model.Id = studentId;
                 var student = await _context.Student.FirstOrDefaultAsync(x => x.Id == studentId && !x.delete_status);
                 if (student == null)
                 {
@@ -184,7 +184,7 @@ namespace LMS.Areas.Admin.Repository
                 }
 
                 _mapper.Map(model, student);
-                student.updated_date= DateTime.Now;
+                student.updated_date = DateTime.Now;
                 student.updated_by = _userId;
                 _context.Entry(student).State = EntityState.Modified;
                 await _context.SaveChangesAsync();

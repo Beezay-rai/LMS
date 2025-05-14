@@ -7,7 +7,7 @@ namespace LMS.Models
     {
         [JsonIgnore]
         public HttpStatusCode HttpStatusCode { get; set; }
-        public bool Status { get;set; }
+        public bool Status { get; set; }
         public string Message { get; set; }
     }
 
@@ -16,6 +16,10 @@ namespace LMS.Models
     {
         [JsonPropertyOrder(3)]
         public T Data { get; set; }
+    }
+    public class ApiResponseModel : BaseApiResponseModel
+    {
+
     }
 
     public class ApiErrorResponseModel<T> : BaseApiResponseModel

@@ -2,7 +2,6 @@
 using LMS.Models;
 using LMS.Models.Settings;
 using Microsoft.AspNetCore.Identity;
-using System;
 
 namespace LMS.Utility
 {
@@ -52,14 +51,14 @@ namespace LMS.Utility
                             if (result.Succeeded)
                             {
                                 logger.LogInformation("Administrator Seeded into Database!");
-                           
+
                             }
                             else
                             {
                                 logger.LogError("Failed to seed Administrator into Database!");
                             }
                         }
-                      
+
                     }
                 }
                 else

@@ -1,6 +1,5 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,7 +39,7 @@ namespace LMS.Areas.Admin.Controllers
         [HttpPut("{bookId}")]
         public async Task<IActionResult> EditBook(int bookId, [FromBody] BookModel model)
         {
-            var data = await _Book.UpdateBook(bookId,model);
+            var data = await _Book.UpdateBook(bookId, model);
             return StatusCode((int)data.HttpStatusCode, data);
         }
 

@@ -1,6 +1,4 @@
 ﻿using LMS.Interfaces;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace LMS.Services
@@ -14,7 +12,7 @@ namespace LMS.Services
             _connectionMultiplexer = connectionMultiplexer;
             _redisDb = _connectionMultiplexer.GetDatabase();
         }
-        public async Task SetCacheValueAsync(string key, string value, TimeSpan timeSpan =default)
+        public async Task SetCacheValueAsync(string key, string value, TimeSpan timeSpan = default)
         {
             if (timeSpan == default)
             {
@@ -33,7 +31,7 @@ namespace LMS.Services
             await _redisDb.KeyDeleteAsync(key);
         }
 
-        
+
 
     }
 }

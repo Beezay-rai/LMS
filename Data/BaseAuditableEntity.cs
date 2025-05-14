@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace LMS.Data
+﻿namespace LMS.Data
 {
     public class BaseAuditableEntity
     {

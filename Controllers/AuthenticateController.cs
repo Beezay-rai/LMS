@@ -1,5 +1,4 @@
-﻿using LMS.Filters;
-using LMS.Interfaces;
+﻿using LMS.Interfaces;
 using LMS.Models;
 using LMS.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -8,27 +7,25 @@ using Microsoft.AspNetCore.Mvc;
 namespace LMS.Controllers
 {
     [ApiController]
-    [AllowAnonymous]
     public class AuthenticateController : ControllerBase
     {
         private readonly IAuthenticateRepository _repo;
         private readonly ITokenService _tokenService;
-        public AuthenticateController(IAuthenticateRepository repo,ITokenService tokenService)
+        public AuthenticateController(IAuthenticateRepository repo, ITokenService tokenService)
         {
             _repo = repo;
             _tokenService = tokenService;
         }
- 
-        [HttpPost]
-        [Route("api/v1/users")]
-        public async Task<IActionResult> SignUp([FromBody] SignUpModel model)
-        {
-            var result = await _repo.SignUp(model);
-            return Ok(result);
-        }
+
+
+
+
+
+
 
         [HttpPost]
         [Route("api/v1/auth/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
             return Ok(await _repo.Login(model));
@@ -36,6 +33,7 @@ namespace LMS.Controllers
 
         [HttpPost]
         [Route("api/v1/auth/google")]
+        [AllowAnonymous]
         public async Task<IActionResult> LoginFromGoogle(string token)
         {
             return Ok(await _repo.GoogleLogin(token));
@@ -43,9 +41,10 @@ namespace LMS.Controllers
 
         [HttpPost]
         [Route("api/v1/auth/refresh/{refresh_token}")]
+        [AllowAnonymous]
         public async Task<IActionResult> RefreshToken(string refresh_token)
         {
-            var (valid,user_id) =_tokenService.ValidateRefreshToken(refresh_token);
+            var (valid, user_id) = _tokenService.ValidateRefreshToken(refresh_token);
             if (valid)
             {
                 return Ok(new
@@ -58,8 +57,8 @@ namespace LMS.Controllers
             {
                 return BadRequest(new BaseApiResponseModel()
                 {
-                    Status=false,
-                    Message="Invalid Refresh Token !"
+                    Status = false,
+                    Message = "Invalid Refresh Token !"
                 });
             }
         }

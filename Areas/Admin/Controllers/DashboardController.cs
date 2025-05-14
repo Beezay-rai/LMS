@@ -1,5 +1,4 @@
 ﻿using LMS.Areas.Admin.Interface;
-using LMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

@@ -1,5 +1,4 @@
 ﻿using LMS.Areas.Admin.Interface;
-using LMS.Areas.Admin.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,5 +32,5 @@ namespace LMS.Areas.Admin.Controllers
 
     }
 
-   
+
 }

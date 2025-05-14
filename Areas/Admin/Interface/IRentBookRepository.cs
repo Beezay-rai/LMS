@@ -13,6 +13,6 @@ namespace LMS.Areas.Admin.Interface
         Task<BaseApiResponseModel> DeleteRentBook(int id);
 
 
-        Task<BaseApiResponseModel> ReturnRentBook(int rent_id,int[] book_id);
+        Task<BaseApiResponseModel> ReturnRentBook(int rent_id, int[] book_id);
     }
 }

@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using LMS.Interfaces;
+using LMS.Models.Settings;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System.Text;
 using System.Text.Json;
-using LMS.Interfaces;
-using LMS.Models.Settings;
 
 namespace LMS.Filters
 {
@@ -12,7 +12,7 @@ namespace LMS.Filters
         public bool IsReusable => false;
         private readonly int _timeToLiveInSeconds;
 
-        public CacheFilter(int timeToLiveInSeconds = 10) 
+        public CacheFilter(int timeToLiveInSeconds = 5)
         {
             _timeToLiveInSeconds = timeToLiveInSeconds;
         }
@@ -62,7 +62,8 @@ namespace LMS.Filters
                 }
 
                 var executedContext = await next();
-                if (executedContext.Result is OkObjectResult objectResult)
+                int statusCode = executedContext.HttpContext.Response.StatusCode;
+                if (statusCode >= 200 && statusCode < 300 && executedContext.Result is ObjectResult objectResult)
                 {
                     var serialized = JsonSerializer.Serialize(objectResult.Value, settings);
                     await _cacheService.SetCacheValueAsync(cacheKey, serialized, TimeSpan.FromSeconds(_timeToLiveInSeconds));

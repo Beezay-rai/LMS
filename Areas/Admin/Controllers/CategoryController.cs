@@ -1,6 +1,5 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -40,8 +39,7 @@ namespace LMS.Areas.Admin.Controllers
         [HttpPut("{categoryId}")]
         public async Task<IActionResult> EditCategory(int categoryId, [FromBody] CategoryModel model)
         {
-            var data = await _repo.UpdateCategory(categoryId,model);
-            
+            var data = await _repo.UpdateCategory(categoryId, model);
             return StatusCode((int)data.HttpStatusCode, data);
         }
 

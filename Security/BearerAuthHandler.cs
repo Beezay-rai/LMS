@@ -1,16 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SharpYaml.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace LMS.Security
 {
@@ -37,7 +34,7 @@ namespace LMS.Security
                 var endpoint = Context.GetEndpoint();
                 if (endpoint?.Metadata?.GetMetadata<IAllowAnonymous>() != null)
                 {
-                    return AuthenticateResult.NoResult(); 
+                    return AuthenticateResult.NoResult();
                 }
 
                 var token = Request.Headers["Authorization"].ToString();
@@ -78,14 +75,14 @@ namespace LMS.Security
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
-                RequireExpirationTime =true,
+                RequireExpirationTime = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 ClockSkew = TimeSpan.Zero,
                 ValidIssuer = _configuration["JWT:ValidIssuer"],
                 ValidAudience = _configuration["JWT:ValidAudience"],
                 IssuerSigningKey = new SymmetricSecurityKey(key),
-                
+
             };
 
             return tokenHandler.ValidateToken(token, validationParameters, out validatedToken);
@@ -97,12 +94,12 @@ namespace LMS.Security
             {
                 Status = StatusCodes.Status401Unauthorized,
                 Title = "Unauthorized",
-                Detail = "Your token is invalid or expired.",
+
                 Type = "https://datatracker.ietf.org/doc/html/rfc7235#page-6"
             };
 
             var response = context.Response;
-            response.Clear(); 
+            response.Clear();
             response.StatusCode = StatusCodes.Status401Unauthorized;
             response.ContentType = "application/problem+json";
 
@@ -110,7 +107,7 @@ namespace LMS.Security
 
             await response.WriteAsync(json);
             await response.Body.FlushAsync();
-            await response.CompleteAsync(); 
+            await response.CompleteAsync();
         }
 
     }

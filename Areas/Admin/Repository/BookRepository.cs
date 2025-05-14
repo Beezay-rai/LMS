@@ -37,10 +37,10 @@ namespace LMS.Areas.Admin.Repository
                     .ToListAsync();
 
 
-                books.ForEach(data => 
+                books.ForEach(data =>
                 {
                     data.book_categories = _context.BookCategoryDetail.Where(x => x.BookId == data.Id).Select(x => x.CategoryId).ToList();
-                
+
                 });
                 return new ApiResponseModel<List<BookModel>>
                 {

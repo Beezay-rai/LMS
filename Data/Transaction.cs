@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Data
 {
-    public class Transaction :BaseAuditableEntity
+    public class Transaction : BaseAuditableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -22,7 +22,7 @@ namespace LMS.Data
         public virtual ICollection<BookTransaction> BookTransactions { get; set; }
     }
 
-    public class BookTransaction :BaseAuditableEntity
+    public class BookTransaction : BaseAuditableEntity
     {
         [Key]
         public int Id { get; set; }

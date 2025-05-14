@@ -1,6 +1,5 @@
 ﻿using LMS.Areas.Admin.Interface;
 using LMS.Areas.Admin.Models;
-using LMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,7 +20,7 @@ namespace LMS.Areas.Admin.Controllers
         {
             var data = await _Course.GetAllCourse();
             return StatusCode((int)data.HttpStatusCode, data);
-       }
+        }
 
         [HttpGet("{courseId}")]
         public async Task<IActionResult> GetCourseById(int courseId)

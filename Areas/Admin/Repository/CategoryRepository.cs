@@ -107,7 +107,7 @@ namespace LMS.Areas.Admin.Repository
                 }
 
                 category.delete_status = true;
-               
+
                 await _context.SaveChangesAsync();
 
                 return new BaseApiResponseModel

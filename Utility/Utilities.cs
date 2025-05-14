@@ -2,10 +2,8 @@
 using LMS.Data;
 using LMS.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace LMS.Utility
 {
@@ -23,10 +21,10 @@ namespace LMS.Utility
             _context = context;
         }
 
-        public async Task<ApplicationUser>GetUserById(string userId)
+        public async Task<ApplicationUser> GetUserById(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
-            return user;    
+            return user;
         }
 
         public async Task<List<Claim>> GetUserClaims(ApplicationUser user)

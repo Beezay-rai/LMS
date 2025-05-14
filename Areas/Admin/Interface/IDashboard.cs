@@ -1,5 +1,4 @@
-﻿using LMS.Areas.Admin.Models;
-using LMS.Models;
+﻿using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {

@@ -23,6 +23,6 @@ namespace LMS.Data
         public int book_id { get; set; }
         public DateTime return_date { get; set; }
         public int rent_book_id { get; set; }
-        public bool return_status { get;set; }
+        public bool return_status { get; set; }
     }
 }

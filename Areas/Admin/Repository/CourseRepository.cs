@@ -73,7 +73,7 @@ namespace LMS.Areas.Admin.Repository
                     return new ApiResponseModel<int>
                     {
                         Status = false,
-                        Message = "Course not found with Id : "+id,
+                        Message = "Course not found with Id : " + id,
                         Data = id,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
@@ -166,7 +166,7 @@ namespace LMS.Areas.Admin.Repository
                     {
                         Status = false,
                         Message = "Course not found",
-                        Data =model,
+                        Data = model,
                         HttpStatusCode = HttpStatusCode.NotFound
                     };
                 }

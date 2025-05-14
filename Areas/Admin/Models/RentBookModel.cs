@@ -6,7 +6,7 @@ namespace LMS.Areas.Admin.Models
     {
         [SwaggerIgnore]
         public int Id { get; set; }
-        public string student_id { get;set; }
+        public string student_id { get; set; }
 
         public List<RentBookDetailModel> rent_book { get; set; }
     }
@@ -17,5 +17,5 @@ namespace LMS.Areas.Admin.Models
         public DateTime return_date { get; set; }
         public bool return_status { get; set; }
     }
-  
+
 }

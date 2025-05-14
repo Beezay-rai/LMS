@@ -16,12 +16,12 @@ namespace LMS.Data
         [StringLength(10), MinLength(10)]
         public string Contact { get; set; }
 
-        public bool  Deleted { get; set; }
+        public bool Deleted { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
-        public string    UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
         public DateTime UpdatedDate { get; set; }
-        public string   DeletedBy { get; set; }
+        public string DeletedBy { get; set; }
         public DateTime DeletedDate { get; set; }
 
         public string Name { get; set; }

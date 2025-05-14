@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Data
 {
-    public class Book:BaseAuditableEntity
+    public class Book : BaseAuditableEntity
     {
         [Key]
         public int id { get; set; }
@@ -13,7 +13,7 @@ namespace LMS.Data
         public string isbn { get; set; }
         [Required]
         public string author_name { get; set; }
-  
+
         [Required]
         [DataType(DataType.Date)]
         public DateTime publication_date { get; set; }
