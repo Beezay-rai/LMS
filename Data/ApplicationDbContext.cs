@@ -12,7 +12,7 @@ namespace LMS.Data
 
         public DbSet<Book> Book { get; set; }
         public DbSet<Student> Student { get; set; }
-        public DbSet<Category> Category { get; set; }
+        public DbSet<BookCategory> BookCategory { get; set; }
         public DbSet<Staff> Staff { get; set; }
         public DbSet<Transaction> Transaction { get; set; }
         public DbSet<BookTransaction> BookTransaction { get; set; }

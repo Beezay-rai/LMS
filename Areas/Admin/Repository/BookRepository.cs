@@ -185,6 +185,21 @@ namespace LMS.Areas.Admin.Repository
                 book.updated_by = _userId;
                 book.updated_date = DateTime.UtcNow;
 
+                var toRemove = _context.BookCategoryDetail.Where(x => x.BookId == bookId);
+                _context.BookCategoryDetail.RemoveRange(toRemove);
+                if (model.book_categories !=null)
+                {
+                    var bookCategoryDetails = model.book_categories
+                          .Select(categoryId => new BookCategoryDetail
+                          {
+                              BookId = book.id,
+                              CategoryId = categoryId
+                          }).ToList();
+
+                    await _context.BookCategoryDetail.AddRangeAsync(bookCategoryDetails);
+
+                }
+
                 await _context.SaveChangesAsync();
 
                 return new ApiResponseModel<BookModel>

@@ -9,14 +9,14 @@ using System.Security.Claims;
 
 namespace LMS.Areas.Admin.Repository
 {
-    public class CategoryRepository : ICategoryRepository
+    public class BookCategoryRepository : IBookCategoryRepository
     {
         private readonly IMapper _mapper;
         private readonly ApplicationDbContext _context;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly string _userId;
 
-        public CategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
+        public BookCategoryRepository(ApplicationDbContext context, IHttpContextAccessor contextAccessor, IMapper mapper)
         {
             _mapper = mapper;
             _context = context;
@@ -26,10 +26,10 @@ namespace LMS.Areas.Admin.Repository
 
         public async Task<BaseApiResponseModel> GetAllCategory()
         {
-            var response = new ApiResponseModel<List<CategoryModel>>();
+            var response = new ApiResponseModel<List<BookCategoryModel>>();
             try
             {
-                var data = _mapper.Map<List<CategoryModel>>(await _context.Category.Where(x => x.delete_status == false).ToListAsync());
+                var data = _mapper.Map<List<BookCategoryModel>>(await _context.BookCategory.Where(x => x.delete_status == false).ToListAsync());
                 response.Data = data;
                 response.Status = true;
                 response.HttpStatusCode = HttpStatusCode.OK;
@@ -56,13 +56,13 @@ namespace LMS.Areas.Admin.Repository
         }
         public async Task<BaseApiResponseModel> GetCategoryById(int id)
         {
-            var response = new ApiResponseModel<CategoryModel>();
+            var response = new ApiResponseModel<BookCategoryModel>();
             try
             {
-                var data = _mapper.Map<CategoryModel>(await _context.Category.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
+                var data = _mapper.Map<BookCategoryModel>(await _context.BookCategory.Where(x => x.Id == id && !x.delete_status).FirstOrDefaultAsync());
                 if (data == null)
                 {
-                    return new ApiErrorResponseModel<CategoryModel>
+                    return new ApiErrorResponseModel<BookCategoryModel>
                     {
                         Status = false,
                         Message = "Category not found",
@@ -95,7 +95,7 @@ namespace LMS.Areas.Admin.Repository
         {
             try
             {
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == id);
+                var category = await _context.BookCategory.FirstOrDefaultAsync(x => x.Id == id);
                 if (category == null)
                 {
                     return new ApiErrorResponseModel<bool>
@@ -132,16 +132,16 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-        public async Task<BaseApiResponseModel> AddCategory(CategoryModel model)
+        public async Task<BaseApiResponseModel> AddCategory(BookCategoryModel model)
         {
             try
             {
-                var category = _mapper.Map<Category>(model);
+                var category = _mapper.Map<BookCategory>(model);
 
-                await _context.Category.AddAsync(category);
+                await _context.BookCategory.AddAsync(category);
                 await _context.SaveChangesAsync();
-                model = _mapper.Map<CategoryModel>(category);
-                return new ApiResponseModel<CategoryModel>
+                model = _mapper.Map<BookCategoryModel>(category);
+                return new ApiResponseModel<BookCategoryModel>
                 {
                     Status = true,
                     Data = model,
@@ -164,15 +164,15 @@ namespace LMS.Areas.Admin.Repository
             }
         }
 
-        public async Task<BaseApiResponseModel> UpdateCategory(int categoryId, CategoryModel model)
+        public async Task<BaseApiResponseModel> UpdateCategory(int categoryId, BookCategoryModel model)
         {
             try
             {
                 model.Id = categoryId;
-                var category = await _context.Category.FirstOrDefaultAsync(x => x.Id == categoryId && !x.delete_status);
+                var category = await _context.BookCategory.FirstOrDefaultAsync(x => x.Id == categoryId && !x.delete_status);
                 if (category == null)
                 {
-                    return new ApiResponseModel<CategoryModel>
+                    return new ApiResponseModel<BookCategoryModel>
                     {
                         Status = false,
                         Message = "Category not found",
@@ -184,7 +184,7 @@ namespace LMS.Areas.Admin.Repository
                 category.Name = model.Name;
                 await _context.SaveChangesAsync();
 
-                return new ApiResponseModel<CategoryModel>
+                return new ApiResponseModel<BookCategoryModel>
                 {
                     Status = true,
                     Data = model,

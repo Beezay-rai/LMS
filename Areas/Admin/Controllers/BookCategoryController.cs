@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Admin.Controllers
 {
-    [Route("api/v1/categories")]
+    [Route("api/v1/book-categories")]
     [ApiController]
     [Authorize]
-    public class CategoryController : ControllerBase
+    public class BookCategoryController : ControllerBase
     {
-        private readonly ICategoryRepository _repo;
-        public CategoryController(ICategoryRepository Category)
+        private readonly IBookCategoryRepository _repo;
+        public BookCategoryController(IBookCategoryRepository Category)
         {
             _repo = Category;
         }
@@ -30,14 +30,14 @@ namespace LMS.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory(CategoryModel model)
+        public async Task<IActionResult> CreateCategory(BookCategoryModel model)
         {
             var data = await _repo.AddCategory(model);
             return StatusCode((int)data.HttpStatusCode, data);
         }
 
         [HttpPut("{categoryId}")]
-        public async Task<IActionResult> EditCategory(int categoryId, [FromBody] CategoryModel model)
+        public async Task<IActionResult> EditCategory(int categoryId, [FromBody] BookCategoryModel model)
         {
             var data = await _repo.UpdateCategory(categoryId, model);
             return StatusCode((int)data.HttpStatusCode, data);

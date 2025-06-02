@@ -8,7 +8,7 @@ namespace LMS.Data
         [Key]
         public int id { get; set; }
         [Required]
-        public string book_name { get; set; }
+        public string name { get; set; }
         [Required]
         public string isbn { get; set; }
         [Required]
@@ -33,7 +33,7 @@ namespace LMS.Data
         public int CategoryId { get; set; }
 
         [ForeignKey(nameof(CategoryId))]
-        public Category Category { get; set; }
+        public BookCategory Category { get; set; }
 
         [ForeignKey(nameof(BookId))]
         public Book Book { get; set; }

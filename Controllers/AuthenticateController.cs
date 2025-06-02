@@ -1,8 +1,10 @@
 ﻿using LMS.Interfaces;
 using LMS.Models;
+using LMS.Models.Settings;
 using LMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace LMS.Controllers
 {
@@ -11,15 +13,13 @@ namespace LMS.Controllers
     {
         private readonly IAuthenticateRepository _repo;
         private readonly ITokenService _tokenService;
-        public AuthenticateController(IAuthenticateRepository repo, ITokenService tokenService)
+        private readonly IEmailService _emailService;
+        public AuthenticateController(IAuthenticateRepository repo, ITokenService tokenService, IEmailService emailService)
         {
             _repo = repo;
             _tokenService = tokenService;
+            _emailService = emailService;    
         }
-
-
-
-
 
 
 

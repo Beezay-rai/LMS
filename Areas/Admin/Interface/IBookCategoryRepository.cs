@@ -3,12 +3,12 @@ using LMS.Models;
 
 namespace LMS.Areas.Admin.Interface
 {
-    public interface ICategoryRepository
+    public interface IBookCategoryRepository
     {
         Task<BaseApiResponseModel> GetAllCategory();
         Task<BaseApiResponseModel> GetCategoryById(int id);
-        Task<BaseApiResponseModel> AddCategory(CategoryModel model);
-        Task<BaseApiResponseModel> UpdateCategory(int courseId, CategoryModel model);
+        Task<BaseApiResponseModel> AddCategory(BookCategoryModel model);
+        Task<BaseApiResponseModel> UpdateCategory(int courseId, BookCategoryModel model);
         Task<BaseApiResponseModel> DeleteCategory(int id);
     }
 }

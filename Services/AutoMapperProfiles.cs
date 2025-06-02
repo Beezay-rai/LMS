@@ -8,7 +8,7 @@ namespace LMS.Services
     {
         public AutoMapperProfiles()
         {
-            CreateMap<Category, CategoryModel>().ReverseMap();
+            CreateMap<BookCategory, BookCategoryModel>().ReverseMap();
             CreateMap<Book, BookModel>().ReverseMap();
             CreateMap<Course, CourseModel>().ReverseMap();
             CreateMap<Student, StudentModel>().ReverseMap();

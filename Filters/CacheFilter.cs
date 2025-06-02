@@ -12,7 +12,7 @@ namespace LMS.Filters
         public bool IsReusable => false;
         private readonly int _timeToLiveInSeconds;
 
-        public CacheFilter(int timeToLiveInSeconds = 5)
+        public CacheFilter(int timeToLiveInSeconds = 2)
         {
             _timeToLiveInSeconds = timeToLiveInSeconds;
         }
@@ -40,14 +40,16 @@ namespace LMS.Filters
 
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
             {
-                if (_cacheSetting is null || !_cacheSetting.Enable || context.HttpContext.Request.Method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+                var request = context.HttpContext.Request;
+                var cacheKey = GenerateCacheKey(request);
+                if (_cacheSetting is null || !_cacheSetting.Enable || !context.HttpContext.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
                 {
+                    //await _cacheService.ClearByPattern("api");
                     await next();
                     return;
                 }
 
-                var request = context.HttpContext.Request;
-                var cacheKey = GenerateCacheKey(request);
+         
                 var settings = new JsonSerializerOptions
                 {
                     PropertyNamingPolicy = new LowercaseNamingPolicy()

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using StackExchange.Redis;
@@ -90,7 +91,7 @@ builder.Services.AddScoped<IAuthenticateRepository, AuthenticateRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IBookCategoryRepository, BookCategoryRepository>();
 builder.Services.AddScoped<IRentBookRepository, RentBookRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
@@ -98,6 +99,7 @@ builder.Services.AddScoped<IDashboard, DashboardRepository>();
 builder.Services.AddScoped<IUtility, Utilities>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var redisCacheSetting = new RedisCacheSetting();
 builder.Configuration.GetSection("RedisCacheSetting").Bind(redisCacheSetting);
@@ -121,6 +123,11 @@ if (redisCacheSetting.Enable)
     builder.Services.AddSingleton(muxer);
     builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 }
+
+var sendGridSetting = new SendGridSetting();
+builder.Configuration.GetSection("SendGridSetting").Bind(sendGridSetting);
+builder.Services.AddSingleton(sendGridSetting);
+
 
 
 //builder.Services.AddOpenTelemetry()

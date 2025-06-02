@@ -44,12 +44,12 @@ namespace LMS.Areas.Admin.Controllers
             return StatusCode((int)data.HttpStatusCode, data);
         }
 
-        [HttpDelete("{RentBookId}")]
-        public async Task<IActionResult> DeleteRentBook(int RentBookId)
-        {
-            var data = await _repo.DeleteRentBook(RentBookId);
-            return StatusCode((int)data.HttpStatusCode, data);
-        }
+        //[HttpDelete("{RentBookId}")]
+        //public async Task<IActionResult> DeleteRentBook(int RentBookId)
+        //{
+        //    var data = await _repo.DeleteRentBook(RentBookId);
+        //    return StatusCode((int)data.HttpStatusCode, data);
+        //}
 
     }
 }

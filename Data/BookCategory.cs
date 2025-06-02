@@ -2,7 +2,7 @@
 
 namespace LMS.Data
 {
-    public class Category
+    public class BookCategory
     {
         [Key]
         public int Id { get; set; }
