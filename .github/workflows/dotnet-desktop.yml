@@ -17,6 +17,18 @@ jobs:
           
       - name: Install dependencies
         run: dotnet restore
+        # Replace placeholders in appsettings.json with GitHub Secrets
+      - name: Inject Secrets into appsettings.json
+        shell: powershell
+        run: |
+          (Get-Content appsettings.json) | ForEach-Object {
+            $_ -replace '{CONNECTION_STRING}', '${{ secrets.DB_CONNECTION_STRING }}' `
+               -replace '{JWT_SECRET}', '${{ secrets.JWT_SECRET }}' `
+               -replace '\${REDIS_USERNAME}', '${{ secrets.REDIS_USERNAME }}' `
+               -replace '\${REDIS_PASSWORD}', '${{ secrets.REDIS_PASSWORD }}' `
+               -replace '\${REDIS_CONNECTION_STRING}', '${{ secrets.REDIS_CONNECTION_STRING }}' `
+               -replace '\${SENDGRID_API_KEY}', '${{ secrets.SENDGRID_API_KEY }}'
+          } | Set-Content appsettings.json
         
       - name: Build
         run: dotnet build --configuration Release --no-restore
