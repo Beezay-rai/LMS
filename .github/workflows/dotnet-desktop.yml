@@ -27,6 +27,9 @@ jobs:
                -replace '\${REDIS_USERNAME}', '${{ secrets.REDIS_USERNAME }}' `
                -replace '\${REDIS_PASSWORD}', '${{ secrets.REDIS_PASSWORD }}' `
                -replace '\${REDIS_CONNECTION_STRING}', '${{ secrets.REDIS_CONNECTION_STRING }}' `
+               -replace '{ADMIN_EMAIL}', '${{ secrets.ADMIN_EMAIL }}' `
+                -replace '{ADMIN_USERNAME}', '${{ secrets.ADMIN_USERNAME }}' `
+                -replace '{ADMIN_PASSWORD}', '${{ secrets.ADMIN_PASSWORD }}' `
                -replace '\${SENDGRID_API_KEY}', '${{ secrets.SENDGRID_API_KEY }}'
           } | Set-Content appsettings.json
         
